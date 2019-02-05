@@ -1,12 +1,15 @@
 package com.subscription.android.client.view;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,7 +22,9 @@ import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.Api;
 import com.subscription.android.client.R;
 import com.subscription.android.client.model.Subscriptions;
+import com.subscription.android.client.model.VisitDate;
 
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,16 +34,17 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SubscriptionActivity extends AppCompatActivity {
-    ListView listView;
+    GridView gvMain;
     Button btnOk;
     TextView user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("SubActivity", "Activity started");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_subscription);
+        setContentView(R.layout.activity_grid_subscription);
 
-        listView = (ListView) findViewById(R.id.listViewHeroes);
+        gvMain = (GridView) findViewById(R.id.gvMain);
         user=(TextView) findViewById(R.id.userName);
         btnOk = (Button) findViewById(R.id.button2admin);
 
@@ -49,7 +55,7 @@ public class SubscriptionActivity extends AppCompatActivity {
                }
         };
         btnOk.setOnClickListener(oclBtnOk);
-        user.setText("Hello "+FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        user.setText("Hello "+FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
         getSubscriptions();
     }
     private void go2Client() {
@@ -78,33 +84,34 @@ public class SubscriptionActivity extends AppCompatActivity {
 
                             // Send token to your backend via HTTPS
                             // ...
-                            Call<List<Subscriptions>> call = api.getDescription(idToken);
+                            Call<List<Subscriptions>> call = api.getSubscriptionByUid(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
                             call.enqueue(new Callback<List<Subscriptions>>() {
                                 @Override
                                 public void onResponse(Call<List<Subscriptions>> call, Response<List<Subscriptions>> response) {
 
-                                    List<Subscriptions> heroList = response.body();
+                                    List<Subscriptions> dateList = response.body();
 
-                                    //Creating an String array for the ListView
-                                    String[] heroes = new String[heroList.size()];
+                                    List<VisitDate> dates=dateList.get(0).getVisitDates();
+                                    String[] visitedDates = new String[dates.size()];
 
-                                    //looping through all the heroes and inserting the names inside the string array
-                                    for (int i = 0; i < heroList.size(); i++) {
-                                        heroes[i] = heroList.get(i).getDescription();
+
+                                    for (int i = 0; i < dates.size(); i++) {
+                                        visitedDates[i] = dates.get(i).getDate().toString();
                                     }
 
                                     System.out.println("debug");//change to log
                                     //displaying the string array into listview
-                                    listView.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, heroes));
 
+                                    gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
+                                    adjustGridView();
                                 }
 
                                 @Override
                                 public void onFailure(Call<List<Subscriptions>> call, Throwable t) {
                                     Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                                     String[] str = {"Error","='("};
-                                    listView.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, str));
+                                    gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, str));
                                     System.out.println(t.getMessage());
                                     t.printStackTrace();
                                 }
@@ -117,6 +124,9 @@ public class SubscriptionActivity extends AppCompatActivity {
                 });
 
 
+    }
+    private void adjustGridView() {
+        gvMain.setNumColumns(4);
     }
 
 }

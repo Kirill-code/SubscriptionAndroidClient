@@ -25,12 +25,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.Api;
 
-import com.subscription.android.client.R;
+
 import com.subscription.android.client.fragments.Dialog2;
 import com.subscription.android.client.model.User;
 
 import java.util.List;
-import java.util.Map;
+import com.subscription.android.client.R;
 
 import retrofit2.Call;
 import retrofit2.Callback;

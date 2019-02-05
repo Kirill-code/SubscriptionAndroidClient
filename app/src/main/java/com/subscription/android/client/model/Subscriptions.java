@@ -1,13 +1,16 @@
 package com.subscription.android.client.model;
 
+import java.util.List;
+
 /**
  * Created by Kirill_code on 15.01.2019.
  */
 public class Subscriptions {
-    private int id, userid, instructorid, price;
+    private long id, userid, instructorid, price;
     private String saleDate, finishDate, description;
+    private List<VisitDate> visitDates;
 
-    public Subscriptions(int id, int userid, int instructorid, int price, String saleDate, String finishDate, String description) {
+    public Subscriptions(long id, long userid, long instructorid, long price, String saleDate, String finishDate, String description) {
         this.id = id;
         this.userid = userid;
         this.instructorid = instructorid;
@@ -17,19 +20,27 @@ public class Subscriptions {
         this.description = description;
     }
 
-    public int getId() {
+    public List<VisitDate> getVisitDates() {
+        return visitDates;
+    }
+
+    public void setVisitDates(List<VisitDate> visitDates) {
+        this.visitDates = visitDates;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public int getUserid() {
+    public long getUserid() {
         return userid;
     }
 
-    public int getInstructorid() {
+    public long getInstructorid() {
         return instructorid;
     }
 
-    public int getPrice() {
+    public long getPrice() {
         return price;
     }
 
