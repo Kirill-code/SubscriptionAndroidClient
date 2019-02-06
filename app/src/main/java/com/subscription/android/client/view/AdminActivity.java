@@ -2,6 +2,7 @@ package com.subscription.android.client.view;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.Api;
 
 
+import com.subscription.android.client.BaseActivity;
 import com.subscription.android.client.fragments.Dialog2;
 import com.subscription.android.client.model.User;
 
@@ -38,7 +40,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class AdminActivity extends AppCompatActivity {
+public class AdminActivity extends BaseActivity {
     ListView listView;
 
     public static String msgAdmin;
@@ -90,14 +92,14 @@ public class AdminActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             String idToken = task.getResult().getToken();
-
+                            showProgressDialog();
                             // Send token to your backend via HTTPS
                             Call<List<User>> call = api.getAdminEmails(idToken);
 
                             call.enqueue(new Callback<List<User>>() {
                                 @Override
                                 public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-
+                                    hideProgressDialog();
                                     List<User> userList = response.body();
 
                                     String[] users = new String[userList.size()];

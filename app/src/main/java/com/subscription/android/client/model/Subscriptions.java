@@ -6,14 +6,22 @@ import java.util.List;
  * Created by Kirill_code on 15.01.2019.
  */
 public class Subscriptions {
-    private long id, userid, instructorid, price;
-    private String saleDate, finishDate, description;
+    private long id,  price;
+    private String saleDate, finishDate, description, userid;
     private List<VisitDate> visitDates;
+    private Instructor associatedInstructor;
 
-    public Subscriptions(long id, long userid, long instructorid, long price, String saleDate, String finishDate, String description) {
+    public Instructor getInstructor() {
+        return associatedInstructor;
+    }
+
+    public void setInstructor(Instructor instructor) {
+        this.associatedInstructor = instructor;
+    }
+
+    public Subscriptions(long id, String userid, long price, String saleDate, String finishDate, String description) {
         this.id = id;
         this.userid = userid;
-        this.instructorid = instructorid;
         this.price = price;
         this.saleDate = saleDate;
         this.finishDate = finishDate;
@@ -32,13 +40,10 @@ public class Subscriptions {
         return id;
     }
 
-    public long getUserid() {
+    public String getUserid() {
         return userid;
     }
 
-    public long getInstructorid() {
-        return instructorid;
-    }
 
     public long getPrice() {
         return price;

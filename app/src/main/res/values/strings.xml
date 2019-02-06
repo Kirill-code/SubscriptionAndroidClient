@@ -26,7 +26,7 @@
     <string name="custom_token">Custom Token</string>
     <string name="signed_in">Signed In</string>
     <string name="signed_out">Signed Out</string>
-    <string name="token_null">Token: null</string>
+    <string name="token_null" translatable="false">Token: null</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
     <string name="desc_firebase_lockup">Firebase logo and name</string>
@@ -71,10 +71,15 @@
     <string name="button2admin">Assign admin rights</string>
     <string name="hello">Hello username</string>
 
-    <string name="yes">Да</string>
-    <string name="no">Нет</string>
-    <string name="deleteAdmin">Удалить</string>
-    <string name="assignAdmin">Назначить</string>
-    <string name="cancel">Отмена</string>
-    <string name="maybe">Возможно</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="deleteAdmin">Delete</string>
+    <string name="assignAdmin">Assign</string>
+    <string name="cancel">Cancel</string>
+    <string name="maybe">Maybe</string>
+    <string name="instructorName" />
+    <string name="excount" />
+    <string name="subscCost" />
+    <string name="qrCode">qr</string>
+    <string name="greetings">Hello</string>
 </resources>

@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.Api;
 import com.subscription.android.client.R;
+import com.subscription.android.client.view.SubscriptionActivity;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,7 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickListener {
 
     final String LOG_TAG = "adminDialog";
-    String uid, admin;
+    String uid, admin,msg;
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         admin = getArguments().getString("admin");
         uid = getArguments().getString("uid");
@@ -62,12 +63,14 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
                             call.enqueue(new Callback<Void>() {
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
-                                    Log.d("AssignAdmin", "Admin rights assigned");
-                                    //notification
+                                    msg="успешно.";
+                                    response.body();
+                                    Log.d("AssignAdmin", "Admin rights assigned "+uid);
                        }
 
                                 @Override
                                 public void onFailure(Call<Void> call, Throwable t) {
+                                    msg="с ошибкой.";
                                     System.out.println(t.getMessage());
                                     t.printStackTrace();
                                 }
@@ -81,16 +84,19 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
 
 
     }
+    public void notifyUser(){
+        Toast.makeText(getActivity(), "Права назначены "+msg, Toast.LENGTH_SHORT).show();
+    }
 
     public void onClick(DialogInterface dialog, int which) {
+
         int i = 0;
         switch (which) {
             case Dialog.BUTTON_POSITIVE: {
                 i = R.string.yes;
-              try{
-                    assignAdmins(uid);
-
-
+                try{
+                  assignAdmins(uid);
+                  notifyUser();
                 }
                 catch (Exception ex){
                     ex.printStackTrace();
