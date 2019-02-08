@@ -16,7 +16,7 @@ import retrofit2.http.Query;
 
 
 public interface Api {
-
+    //TODO propertie file
      static final String BASE_URL = "http://192.168.43.251:8080/";
 
     @GET("users")

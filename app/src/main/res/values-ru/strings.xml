@@ -80,4 +80,6 @@
     <string name="instructorName" />
     <string name="qrCode">qr</string>
     <string name="greetings">Привет</string>
+    <string name="networkissue">Network issue, please retry</string>
+    <string name="bigIssue">Please contact with helpdesk</string>
 </resources>

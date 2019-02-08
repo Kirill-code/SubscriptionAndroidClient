@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,8 +25,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.subscription.android.client.Api;
 import com.subscription.android.client.BaseActivity;
@@ -45,7 +49,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SubscriptionActivity extends BaseActivity {
     GridView gvMain;
-    ImageButton btnOk;
+    ImageButton btnOk, btStartScan;
     TextView hellouser, instructorName, exCost;
 
     @Override
@@ -71,7 +75,45 @@ public class SubscriptionActivity extends BaseActivity {
         hellouser.setText(getResources().getString(R.string.greetings)+" "+FirebaseAuth.getInstance().getCurrentUser().getEmail());
         getSubscriptions();
         qrGenerator(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+
+        btStartScan = findViewById(R.id.photoScan);
+
+        btStartScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                IntentIntegrator integrator = new IntentIntegrator(SubscriptionActivity.this);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+                integrator.setCameraId(0);
+                integrator.setBeepEnabled(false);
+                integrator.initiateScan();
+            }
+        });
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result != null) {
+            if(result.getContents() == null) {
+                Log.e("Scan*******", "Cancelled scan");
+
+            } else {
+                Log.e("Scan", "Scanned");
+
+               updateText(result.getContents());
+            }
+        } else {
+            // This is important, otherwise the result will not be passed to the fragment
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+
+
+    private void updateText(String scanCode) {
+        exCost.setText(scanCode);
+    }
+
     private void go2Client() {
         Intent intent = new Intent(this, AdminActivity.class);
         startActivity(intent);
@@ -81,7 +123,7 @@ public class SubscriptionActivity extends BaseActivity {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create()) //Here we are using the GsonConverterFactory to directly convert json data to object
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         Api api = retrofit.create(Api.class);
@@ -96,10 +138,8 @@ public class SubscriptionActivity extends BaseActivity {
                             String idToken = task.getResult().getToken();
 
                            showProgressDialog();
-                            // Send token to your backend via HTTPS
-                            // ...
+
                             Call<Subscriptions> call = api.getSubscriptionByUid(idToken,FirebaseAuth.getInstance().getCurrentUser().getUid());
-                           // Call<Subscriptions> call = api.getSubscriptionByUid("GXKxfbt5R9hrbLjg4SfaOwIasY52");
                             call.enqueue(new Callback<Subscriptions>() {
                                 @Override
                                 public void onResponse(Call<Subscriptions> call, Response<Subscriptions> response) {
@@ -113,9 +153,6 @@ public class SubscriptionActivity extends BaseActivity {
                                         visitedDates[i] = dates.get(i).getDate().toString();
                                     }
 
-                                    System.out.println("debug");//change to log
-                                    //displaying the string array into listview
-
                                     gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
                                     adjustGridView();
                                 }
@@ -123,19 +160,18 @@ public class SubscriptionActivity extends BaseActivity {
                                 @Override
                                 public void onFailure(Call<Subscriptions> call, Throwable t) {
                                     if (t instanceof IOException) {
-                                        Toast.makeText(SubscriptionActivity.this, "this is an actual network failure :( inform the user and possibly retry", Toast.LENGTH_SHORT).show();
-                                        // logging probably not necessary
+                                        Toast.makeText(SubscriptionActivity.this, getResources().getString(R.string.networkissue), Toast.LENGTH_SHORT).show();
                                     }
                                     else {
-                                        Toast.makeText(SubscriptionActivity.this, "conversion issue! big problems :(", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(SubscriptionActivity.this, getResources().getString(R.string.bigIssue), Toast.LENGTH_SHORT).show();
                                         t.printStackTrace();
-                                        Log.d("SubActivity", t.getMessage());
+                                        Log.d("SubActivityBigProblem", t.getMessage());
                                     }
                                 }
                             });
 
                         } else {
-                            // Handle error -> task.getException();
+                            Log.e("CallbackException", task.getException().toString());
                         }
                     }
                 });

@@ -73,14 +73,14 @@
     <GridView
         android:id="@+id/gvMain"
         android:layout_width="match_parent"
-        android:layout_height="124dp">
+        android:layout_height="142dp">
 
     </GridView>
 
     <ImageView
         android:id="@+id/img_result_qr"
         android:layout_width="match_parent"
-        android:layout_height="142dp"
+        android:layout_height="223dp"
         android:contentDescription="@string/qrCode"
         app:srcCompat="@android:drawable/ic_lock_idle_alarm" />
 
