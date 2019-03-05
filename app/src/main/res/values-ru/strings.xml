@@ -82,4 +82,8 @@
     <string name="greetings">Привет</string>
     <string name="networkissue">Network issue, please retry</string>
     <string name="bigIssue">Please contact with helpdesk</string>
+    <string name="helpdesk">Please contact with helpdesk.</string>
+    <string name="emptylessons">You have not attended any classes yet</string>
+    <string name="errorconnection">Internet connetctions problem. Please retry.</string>
+    <string name="qrscanerror">Wrong QR code</string>
 </resources>

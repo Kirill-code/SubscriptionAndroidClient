@@ -2,11 +2,8 @@ package com.subscription.android.client.fragments;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Looper;
-import android.service.notification.ConditionProviderService;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,10 +15,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.Api;
 import com.subscription.android.client.R;
-import com.subscription.android.client.view.AdminActivity;
-import com.subscription.android.client.view.SubscriptionActivity;
-
-import java.util.logging.Handler;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,19 +22,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Kirill_code on 30.01.2019.
- */
-public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickListener {
+public  class ScanDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
-    final String LOG_TAG = "adminDialog";
-    String uid, admin;
-    boolean flagResponse;
+    final String LOG_TAG = "visitDialog";
+    String uid, admin,msg;
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         admin = getArguments().getString("admin");
         uid = getArguments().getString("uid");
         android.app.AlertDialog.Builder adb = new android.app.AlertDialog.Builder(getActivity())
-                .setTitle("Внимание. Права администратора.")
+                .setTitle("Отметка о посещении")
                 .setPositiveButton(R.string.assignAdmin, this)
                 .setNegativeButton(R.string.deleteAdmin, this)
                 .setNeutralButton(R.string.cancel, this)
@@ -68,19 +57,17 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
                             call.enqueue(new Callback<Void>() {
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
-                                    ;
+                                    msg="успешно.";
                                     response.body();
-                                    Log.d("AssignAdmin", "Admin rights assigned "+uid);
-                                    flagResponse=true;
                                     notifyUser();
+                                    Log.d("AssignAdmin", "Admin rights assigned "+uid);
                        }
 
                                 @Override
                                 public void onFailure(Call<Void> call, Throwable t) {
-
+                                    msg="с ошибкой.";
                                     System.out.println(t.getMessage());
                                     t.printStackTrace();
-
                                 }
                             });
 
@@ -93,9 +80,7 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
 
     }
     public void notifyUser(){
-        if(flagResponse){
-        Toast.makeText(getActivity(), "Права назначены успешно", Toast.LENGTH_SHORT).show();}
-        else Toast.makeText(getActivity(), "Права назначены с ошибкой", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Права назначены "+msg, Toast.LENGTH_SHORT).show();
     }
 
     public void onClick(DialogInterface dialog, int which) {
@@ -106,6 +91,7 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
                 i = R.string.yes;
                 try{
                   assignAdmins(uid);
+                  notifyUser();
                 }
                 catch (Exception ex){
                     ex.printStackTrace();

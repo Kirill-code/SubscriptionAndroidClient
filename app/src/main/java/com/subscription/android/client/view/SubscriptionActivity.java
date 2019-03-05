@@ -1,21 +1,16 @@
 package com.subscription.android.client.view;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +20,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -33,14 +27,21 @@ import com.google.zxing.integration.android.IntentResult;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.subscription.android.client.Api;
 import com.subscription.android.client.BaseActivity;
+import com.subscription.android.client.BuildConfig;
 import com.subscription.android.client.R;
-import com.subscription.android.client.model.Subscriptions;
+import com.subscription.android.client.model.Instructor;
+import com.subscription.android.client.model.Subscription;
 import com.subscription.android.client.model.VisitDate;
 
-import java.io.IOException;
+import java.io.EOFException;
+import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,8 +50,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SubscriptionActivity extends BaseActivity {
     GridView gvMain;
-    ImageButton btnOk, btStartScan;
+    ImageButton btnOk, btStartScan, imageSignOut;
     TextView hellouser, instructorName, exCost;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    Date currentTime = Calendar.getInstance().getTime();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,25 +63,34 @@ public class SubscriptionActivity extends BaseActivity {
         setContentView(R.layout.activity_grid_subscription);
 
         gvMain = (GridView) findViewById(R.id.gvMain);
-        hellouser=(TextView) findViewById(R.id.userName);
-        instructorName=(TextView) findViewById(R.id.instructorName);
+        hellouser = (TextView) findViewById(R.id.userName);
+        instructorName = (TextView) findViewById(R.id.instructorName);
         exCost = (TextView) findViewById(R.id.cost);
-        btnOk =  findViewById(R.id.button2admin);
+        btnOk = findViewById(R.id.button2admin);
+        imageSignOut = findViewById(R.id.imageSignOut);
+        btStartScan = findViewById(R.id.photoScan);
 
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               go2Client();
-               }
+                go2Client();
+            }
         };
         btnOk.setOnClickListener(oclBtnOk);
 
-        hellouser.setText(getResources().getString(R.string.greetings)+" "+FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        hellouser.setText(getResources().getString(R.string.greetings) + " " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
         getSubscriptions();
         qrGenerator(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
+        imageSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        btStartScan = findViewById(R.id.photoScan);
+                mAuth.signOut();
+                go2Main();
+            }
+        });
+
 
         btStartScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +103,10 @@ public class SubscriptionActivity extends BaseActivity {
             }
         });
     }
+    private void go2Main() {
+        Intent intent = new Intent(this, EmailPasswordActivity.class);
+        startActivity(intent);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -98,9 +115,18 @@ public class SubscriptionActivity extends BaseActivity {
                 Log.e("Scan*******", "Cancelled scan");
 
             } else {
-                Log.e("Scan", "Scanned");
+                System.out.println(result.getContents().substring(0,7));
+                if(result.getContents().substring(0,8).equals("syryauid")){
+                    Log.e("Scan", "Scanned:"+result.getContents());
+                    updateText(result.getContents().substring(8));
+                    updateSubscription(result.getContents().substring(8));
+                }else
+                {
+                    Toast.makeText(getApplicationContext(), getResources().getText(R.string.qrscanerror),
+                            Toast.LENGTH_SHORT).show();
+                }
 
-               updateText(result.getContents());
+
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
@@ -118,8 +144,151 @@ public class SubscriptionActivity extends BaseActivity {
         Intent intent = new Intent(this, AdminActivity.class);
         startActivity(intent);
     }
-    private void getSubscriptions() {
+    /*private void updateSubscription(String uid){
 
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Api api = retrofit.create(Api.class);
+
+        // call;
+        //Start token verification
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mUser.getIdToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+
+                            showProgressDialog();
+                            VisitDate newVisit=new VisitDate();
+                            newVisit.setId(15);
+                            newVisit.setDate(currentTime);
+                            Subscription sub2save=new Subscription(4,"8dzAgJGQhXdAnuvejWLG4bAAuk22",111,currentTime.toString(),currentTime.toString()
+                            ,uid);
+                            Instructor inst=new Instructor();
+                            inst.setId(1);
+                            inst.setSurname("Pickls");
+                            inst.setName("Mr");
+                            sub2save.setInstructor(inst);
+                            List<VisitDate> visitList=new ArrayList<>();
+                            visitList.add(newVisit);
+
+                            sub2save.setVisitDates(visitList);
+                            Call<Void> call = api.savesubscription(sub2save);
+                            call.enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    hideProgressDialog();
+                                    Toast.makeText(getApplicationContext(), "Ok", Toast.LENGTH_SHORT).show();
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    Toast.makeText(getApplicationContext(), "NOT ok", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+
+                        } else {
+                            Log.e("CallbackException", task.getException().toString());
+                        }
+                    }
+                });
+
+
+
+    }*/
+
+
+    private void updateSubscription(String uid){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Api api = retrofit.create(Api.class);
+
+        // call;
+        //Start token verification
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mUser.getIdToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+                            String idToken = task.getResult().getToken();
+
+                            showProgressDialog();
+
+                            Call<Subscription> call = api.getSubscriptionByUid(idToken,uid);
+                            call.enqueue(new Callback<Subscription>() {
+                                @Override
+                                public void onResponse(Call<Subscription> call, Response<Subscription> response) {
+                                    hideProgressDialog();
+                                    Subscription saveSub=response.body();
+                                    saveSub.setDescription("Android");
+                                    saveSub.setId(5);
+                                    List<VisitDate> visitDates=saveSub.getVisitDates();
+                                    visitDates.add(new VisitDate(visitDates.size()+1,currentTime));
+                                    System.out.println("titssss");
+
+
+                                   Call<Void> call2save = api.savesubscription(response.body());
+
+                                   call2save.enqueue(new Callback<Void>() {
+                                       @Override
+                                       public void onResponse(Call<Void> call2save, Response<Void> response) {
+                                           Log.i("VisitDate", "Succsessful");
+                                           Toast.makeText(getApplicationContext(), "Ok", Toast.LENGTH_SHORT).show();
+                                       }
+
+                                       @Override
+                                       public void onFailure(Call<Void> call2save, Throwable t) {
+                                           Log.d("VisitDate", "UnSuccsessful");
+
+                                       }
+                                   });
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<Subscription> call, Throwable t) {
+                                    try {
+                                        throw t;
+                                    }
+                                    catch (ConnectException ex)
+                                    {
+                                        hideProgressDialog();
+                                        String[] visitedDates={getResources().getString(R.string.errorconnection)};
+                                        gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content,visitedDates ));
+                                    }
+                                    catch (EOFException ex) {
+                                        hideProgressDialog();
+                                        String[] visitedDates={getResources().getString(R.string.emptylessons)};
+                                        gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content,visitedDates ));
+                                    }
+                                    catch (Throwable et){
+                                        hideProgressDialog();
+                                        String[] visitedDates={getResources().getString(R.string.helpdesk)};
+                                        gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content,visitedDates ));
+                                        Log.d("SubActivityBigProblem", t.getMessage());
+                                        Log.d("SubActivityBigProblem", et.getMessage());
+                                    }
+                                }
+                            });
+
+                        } else {
+                            Log.e("CallbackException", task.getException().toString());
+                        }
+                    }
+                });
+
+
+    }
+
+    private void getSubscriptions() {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
@@ -139,12 +308,14 @@ public class SubscriptionActivity extends BaseActivity {
 
                            showProgressDialog();
 
-                            Call<Subscriptions> call = api.getSubscriptionByUid(idToken,FirebaseAuth.getInstance().getCurrentUser().getUid());
-                            call.enqueue(new Callback<Subscriptions>() {
+                            Call<Subscription> call = api.getSubscriptionByUid(idToken,FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            call.enqueue(new Callback<Subscription>() {
                                 @Override
-                                public void onResponse(Call<Subscriptions> call, Response<Subscriptions> response) {
+                                public void onResponse(Call<Subscription> call, Response<Subscription> response) {
                                     hideProgressDialog();
                                     List<VisitDate> dates=response.body().getVisitDates();
+
+                                    //response.body().setVisitDates(response.body().setVisitDates(dates));
                                     String[] visitedDates = new String[dates.size()];
 
                                     exCost.setText(String.valueOf(response.body().getPrice()));
@@ -158,14 +329,27 @@ public class SubscriptionActivity extends BaseActivity {
                                 }
 
                                 @Override
-                                public void onFailure(Call<Subscriptions> call, Throwable t) {
-                                    if (t instanceof IOException) {
-                                        Toast.makeText(SubscriptionActivity.this, getResources().getString(R.string.networkissue), Toast.LENGTH_SHORT).show();
+                                public void onFailure(Call<Subscription> call, Throwable t) {
+                                    try {
+                                        throw t;
                                     }
-                                    else {
-                                        Toast.makeText(SubscriptionActivity.this, getResources().getString(R.string.bigIssue), Toast.LENGTH_SHORT).show();
-                                        t.printStackTrace();
+                                    catch (ConnectException ex)
+                                    {
+                                        hideProgressDialog();
+                                        String[] visitedDates={getResources().getString(R.string.errorconnection)};
+                                        gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content,visitedDates ));
+                                    }
+                                    catch (EOFException ex) {
+                                        hideProgressDialog();
+                                        String[] visitedDates={getResources().getString(R.string.emptylessons)};
+                                        gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content,visitedDates ));
+                                    }
+                                    catch (Throwable et){
+                                        hideProgressDialog();
+                                        String[] visitedDates={getResources().getString(R.string.helpdesk)};
+                                        gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content,visitedDates ));
                                         Log.d("SubActivityBigProblem", t.getMessage());
+                                        Log.d("SubActivityBigProblem", et.getMessage());
                                     }
                                 }
                             });
@@ -185,7 +369,7 @@ public class SubscriptionActivity extends BaseActivity {
     public void qrGenerator(String uid){
         QRCodeWriter writer = new QRCodeWriter();
         try {
-            BitMatrix bitMatrix = writer.encode(uid, BarcodeFormat.QR_CODE, 512, 512);
+            BitMatrix bitMatrix = writer.encode("syryauid"+uid, BarcodeFormat.QR_CODE, 512, 512);
             int width = bitMatrix.getWidth();
             int height = bitMatrix.getHeight();
             Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -197,8 +381,9 @@ public class SubscriptionActivity extends BaseActivity {
             ((ImageView) findViewById(R.id.img_result_qr)).setImageBitmap(bmp);
 
         } catch (WriterException e) {
-            e.printStackTrace();
+            Log.d("QRcodeError", e.getMessage());
         }
     }
+
 
 }

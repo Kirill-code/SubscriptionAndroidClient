@@ -1,5 +1,8 @@
 package com.subscription.android.client.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Kirill_code on 06.02.2019.
  */
@@ -8,6 +11,15 @@ public class Instructor {
 
     private long id;
     private String name, surname;
+    private List<Subscription> instructorSubscriptions= new ArrayList<>();
+
+    public List<Subscription> getInstructorSubscriptions() {
+        return instructorSubscriptions;
+    }
+
+    public void setInstructorSubscriptions(List<Subscription> instructorSubscriptions) {
+        this.instructorSubscriptions = instructorSubscriptions;
+    }
 
     public long getId() {
         return id;

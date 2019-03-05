@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by Kirill_code on 15.01.2019.
  */
-public class Subscriptions {
+public class Subscription {
     private long id,  price;
     private String saleDate, finishDate, description, userid;
     private List<VisitDate> visitDates;
@@ -19,10 +19,39 @@ public class Subscriptions {
         this.associatedInstructor = instructor;
     }
 
-    public Subscriptions(long id, String userid, long price, String saleDate, String finishDate, String description) {
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setPrice(long price) {
+        this.price = price;
+    }
+
+    public void setSaleDate(String saleDate) {
+        this.saleDate = saleDate;
+    }
+
+    public void setFinishDate(String finishDate) {
+        this.finishDate = finishDate;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+
+    public void setAssociatedInstructor(Instructor associatedInstructor) {
+        this.associatedInstructor = associatedInstructor;
+    }
+
+    public Subscription(long id, String userid, long price, String saleDate, String finishDate, String description) {
         this.id = id;
         this.userid = userid;
         this.price = price;
+
         this.saleDate = saleDate;
         this.finishDate = finishDate;
         this.description = description;

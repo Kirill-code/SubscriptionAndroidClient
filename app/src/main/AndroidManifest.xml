@@ -13,17 +13,18 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
-        <activity android:name=".view.EmailPasswordActivity">
+        <activity android:name=".view.EmailPasswordActivity"/>
+
+
+        <activity android:name=".view.SubscriptionActivity" />
+        <activity android:name=".BaseActivity" />
+        <activity android:name=".view.AdminActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.SubscriptionActivity" />
-        <activity android:name=".BaseActivity" />
-        <activity android:name=".view.AdminActivity" />
-
     </application>
 
 </manifest>

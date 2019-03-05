@@ -1,7 +1,7 @@
 package com.subscription.android.client;
 
 
-import com.subscription.android.client.model.Subscriptions;
+import com.subscription.android.client.model.Subscription;
 import com.subscription.android.client.model.User;
 
 import java.util.List;
@@ -12,7 +12,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 
 public interface Api {
@@ -22,10 +21,12 @@ public interface Api {
     @GET("users")
     Call<List<User>> getAdminEmails(@Header("token") String token);
     @GET("subscription")
-    Call<List<Subscriptions>> getDescription(@Header("token") String token);
+    Call<List<Subscription>> getDescription(@Header("token") String token);
     @GET("subscription/{uid}")
-    Call<Subscriptions> getSubscriptionByUid(@Header("token") String token,@Path("uid") String uid );
+    Call<Subscription> getSubscriptionByUid(@Header("token") String token, @Path("uid") String uid );
     @POST("adminclaim")
     Call<Void> registerAdmin(@Header("token") String token,@Header("uid") String uid);
+    @POST("savesubscriptions")
+    Call<Void> savesubscription(@Body Subscription subscription);
 
 }
