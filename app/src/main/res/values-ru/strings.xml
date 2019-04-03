@@ -58,7 +58,7 @@
 
     <string name="phone_title_text">Номер телефона</string>
 
-    <string name="twitter_status_fmt">ПОльзователь Twitter:</string>
+    <string name="twitter_status_fmt">Пользователь Twitter:</string>
     <string name="twitter_title_text">Twitter Login</string>
 
     <string name="firebaseui_status_fmt">Firebase User: %s</string>
@@ -86,4 +86,10 @@
     <string name="emptylessons">You have not attended any classes yet</string>
     <string name="errorconnection">Internet connetctions problem. Please retry.</string>
     <string name="qrscanerror">Wrong QR code</string>
+    <string name="formerror">Обязательно.</string>
+    <string name="verificationmsg" >Проверочное письмо отправлено</string>
+    <string name="verificationerror" >Ошибка отправки.</string>
+    <string name="reset_account">"Письмо отправлено на "</string>
+    <string name="forgotpswd">Я забыл пароль.</string>
+    <string name="repeatlater">Please repeat later.</string>
 </resources>

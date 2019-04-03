@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,11 +57,13 @@ public class EmailPasswordActivity extends BaseActivity implements
         mEmailField = findViewById(R.id.field_email);
         mPasswordField = findViewById(R.id.field_password);
 
+
+
         // Buttons
+        findViewById(R.id.forgotpswd).setOnClickListener(this);
         findViewById(R.id.email_sign_in_button).setOnClickListener(this);
         findViewById(R.id.email_create_account_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
-        findViewById(R.id.verify_email_button).setOnClickListener(this);
+
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
@@ -130,17 +133,14 @@ public class EmailPasswordActivity extends BaseActivity implements
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             go2Client();
-
                            // updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(EmailPasswordActivity.this, "Authentication failed.",
+                            Toast.makeText(EmailPasswordActivity.this,  getResources().getString(R.string.auth_failed),
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
-
-
                     }
                 });
         // [END sign_in_with_email]
@@ -155,43 +155,14 @@ public class EmailPasswordActivity extends BaseActivity implements
         Intent intent = new Intent(this, SubscriptionActivity.class);
         startActivity(intent);
     }
-    private void sendEmailVerification() {
-        // Disable button
-        findViewById(R.id.verify_email_button).setEnabled(false);
 
-        // Send verification email
-        // [START send_email_verification]
-        final FirebaseUser user = mAuth.getCurrentUser();
-        user.sendEmailVerification()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // [START_EXCLUDE]
-                        // Re-enable button
-                        findViewById(R.id.verify_email_button).setEnabled(true);
-
-                        if (task.isSuccessful()) {
-                            Toast.makeText(EmailPasswordActivity.this,
-                                    "Verification email sent to " + user.getEmail(),
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.e(TAG, "sendEmailVerification", task.getException());
-                            Toast.makeText(EmailPasswordActivity.this,
-                                    "Failed to send verification email.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                        // [END_EXCLUDE]
-                    }
-                });
-        // [END send_email_verification]
-    }
 
     private boolean validateForm() {
         boolean valid = true;
 
         String email = mEmailField.getText().toString();
         if (TextUtils.isEmpty(email)) {
-            mEmailField.setError("Required.");
+            mEmailField.setError(getResources().getString(R.string.formerror));
             valid = false;
         } else {
             mEmailField.setError(null);
@@ -199,7 +170,7 @@ public class EmailPasswordActivity extends BaseActivity implements
 
         String password = mPasswordField.getText().toString();
         if (TextUtils.isEmpty(password)) {
-            mPasswordField.setError("Required.");
+            mPasswordField.setError(getResources().getString(R.string.formerror));
             valid = false;
         } else {
             mPasswordField.setError(null);
@@ -213,18 +184,39 @@ public class EmailPasswordActivity extends BaseActivity implements
         if (user != null) {
             go2Client();
 
-
             findViewById(R.id.email_password_buttons).setVisibility(View.GONE);
             findViewById(R.id.email_password_fields).setVisibility(View.GONE);
-            findViewById(R.id.signed_in_buttons).setVisibility(View.VISIBLE);
 
-            findViewById(R.id.verify_email_button).setEnabled(!user.isEmailVerified());
 
         } else {
 
             findViewById(R.id.email_password_buttons).setVisibility(View.VISIBLE);
             findViewById(R.id.email_password_fields).setVisibility(View.VISIBLE);
-            findViewById(R.id.signed_in_buttons).setVisibility(View.GONE);
+        }
+    }
+    public void sendPasswordReset(String email) {
+
+        if (TextUtils.isEmpty(email)) {
+            mEmailField.setError(getResources().getString(R.string.formerror));
+
+        } else {
+            mAuth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+
+                                Log.d(TAG, "Reset email sent to"+email);
+                                Toast.makeText(EmailPasswordActivity.this, getResources().getString(R.string.reset_account)+email,
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                Log.d(TAG, "Reset email not sent to"+email);
+                                Toast.makeText(EmailPasswordActivity.this, getResources().getString(R.string.repeatlater),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
         }
     }
 
@@ -235,10 +227,9 @@ public class EmailPasswordActivity extends BaseActivity implements
             createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
         } else if (i == R.id.email_sign_in_button) {
             signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.sign_out_button) {
-            signOut();
-        } else if (i == R.id.verify_email_button) {
-            sendEmailVerification();
+        }
+        if (i == R.id.forgotpswd) {
+            sendPasswordReset(mEmailField.getText().toString());
         }
     }
 }

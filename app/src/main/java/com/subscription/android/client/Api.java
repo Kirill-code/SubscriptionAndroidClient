@@ -22,8 +22,8 @@ public interface Api {
     Call<List<User>> getAdminEmails(@Header("token") String token);
     @GET("subscription")
     Call<List<Subscription>> getDescription(@Header("token") String token);
-    @GET("subscription/{uid}")
-    Call<Subscription> getSubscriptionByUid(@Header("token") String token, @Path("uid") String uid );
+    @GET("uidsubscription/{uid}")
+    Call<Subscription> getSubscriptionByUid(/*@Header("token") String token,*/ @Path("uid") String uid );
     @POST("adminclaim")
     Call<Void> registerAdmin(@Header("token") String token,@Header("uid") String uid);
     @POST("savesubscriptions")

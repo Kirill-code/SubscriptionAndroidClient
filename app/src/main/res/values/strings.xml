@@ -88,4 +88,11 @@
     <string name="emptylessons">You have not attended any classes yet</string>
     <string name="errorconnection">Internet connetctions problem. Please retry.</string>
     <string name="qrscanerror">Wrong QR code</string>
+    <string name="photoScan" />
+    <string name="formerror">Required.</string>
+    <string name="verificationmsg" >"Verification email sent to "</string>
+    <string name="verificationerror" >Failed to send verification email.</string>
+    <string name="reset_account">"Reset email sent to "</string>
+    <string name="forgotpswd">I forgot password.</string>
+    <string name="repeatlater">Please repeat later.</string>
 </resources>

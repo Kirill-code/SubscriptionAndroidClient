@@ -18,11 +18,11 @@
             android:layout_weight="12"></TextView>
 
         <ImageButton
-            android:id="@+id/button2admin3"
+            android:id="@+id/createnewsub"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:contentDescription="adminAccount"
+            android:contentDescription="@string/create_account"
             app:srcCompat="@android:drawable/ic_input_add" />
 
         <ImageButton
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:contentDescription="adminAccount"
+            android:contentDescription="@string/assignAdmin"
             app:srcCompat="@drawable/assign" />
 
         <ImageButton
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:contentDescription="adminAccount"
+            android:contentDescription="@string/sign_out"
             app:srcCompat="@drawable/sign_out" />
 
         <ImageButton
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:contentDescription="adminAccount"
+            android:contentDescription="@string/photoScan"
             app:srcCompat="@drawable/qr_code" />
     </LinearLayout>
 
