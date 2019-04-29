@@ -1,13 +1,16 @@
 package com.subscription.android.client.view;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -54,6 +57,7 @@ public class SubscriptionActivity extends BaseActivity {
     TextView hellouser, instructorName, exCost;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Date currentTime = Calendar.getInstance().getTime();
+    int backButtonCount=0;
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(Api.BASE_URL)
@@ -64,7 +68,6 @@ public class SubscriptionActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //TODO add back button listner
 
         Log.d("SubActivity", "Activity started");
         super.onCreate(savedInstanceState);
@@ -78,7 +81,6 @@ public class SubscriptionActivity extends BaseActivity {
         imageSignOut = findViewById(R.id.imageSignOut);
         btStartScan = findViewById(R.id.photoScan);
         insertNew = findViewById(R.id.createnewsub);
-
 
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
             @Override
@@ -118,6 +120,23 @@ public class SubscriptionActivity extends BaseActivity {
         Intent intent = new Intent(this, EmailPasswordActivity.class);
         startActivity(intent);
     }
+    @Override
+    public void onBackPressed()
+    {
+        if(backButtonCount >= 1)
+        {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        else
+        {
+            Toast.makeText(this, getResources().getText(R.string.exit), Toast.LENGTH_SHORT).show();
+            backButtonCount++;
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -146,6 +165,7 @@ public class SubscriptionActivity extends BaseActivity {
     }
 
 
+
     private void updateText(String scanCode) {
         exCost.setText(scanCode);
     }
@@ -154,64 +174,6 @@ public class SubscriptionActivity extends BaseActivity {
         Intent intent = new Intent(this, AdminActivity.class);
         startActivity(intent);
     }
-    /*private void updateSubscription(String uid){
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Api.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        Api api = retrofit.create(Api.class);
-
-        // call;
-        //Start token verification
-        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-        mUser.getIdToken(true)
-                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
-
-                            showProgressDialog();
-                            VisitDate newVisit=new VisitDate();
-                            newVisit.setId(15);
-                            newVisit.setDate(currentTime);
-                            Subscription sub2save=new Subscription(4,"8dzAgJGQhXdAnuvejWLG4bAAuk22",111,currentTime.toString(),currentTime.toString()
-                            ,uid);
-                            Instructor inst=new Instructor();
-                            inst.setId(1);
-                            inst.setSurname("Pickls");
-                            inst.setName("Mr");
-                            sub2save.setInstructor(inst);
-                            List<VisitDate> visitList=new ArrayList<>();
-                            visitList.add(newVisit);
-
-                            sub2save.setVisitDates(visitList);
-                            Call<Void> call = api.savesubscription(sub2save);
-                            call.enqueue(new Callback<Void>() {
-                                @Override
-                                public void onResponse(Call<Void> call, Response<Void> response) {
-                                    hideProgressDialog();
-                                    Toast.makeText(getApplicationContext(), "Ok", Toast.LENGTH_SHORT).show();
-
-                                }
-
-                                @Override
-                                public void onFailure(Call<Void> call, Throwable t) {
-                                    Toast.makeText(getApplicationContext(), "NOT ok", Toast.LENGTH_SHORT).show();
-
-                                }
-                            });
-
-                        } else {
-                            Log.e("CallbackException", task.getException().toString());
-                        }
-                    }
-                });
-
-
-
-    }*/
-
 
     private void updateSubscription(String uid) {
 

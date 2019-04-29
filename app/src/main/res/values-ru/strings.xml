@@ -92,4 +92,5 @@
     <string name="reset_account">"Письмо отправлено на "</string>
     <string name="forgotpswd">Я забыл пароль.</string>
     <string name="repeatlater">Please repeat later.</string>
+    <string name="exit">Для выхода нажмите назад еще раз.</string>
 </resources>
