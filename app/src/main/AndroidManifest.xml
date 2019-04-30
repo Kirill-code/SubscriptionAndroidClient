@@ -3,8 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.subscription.android.client">
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -24,7 +28,8 @@
         <activity android:name=".view.SubscriptionActivity" />
         <activity android:name=".BaseActivity" />
         <activity android:name=".view.AdminActivity" />
-
+        <activity android:name=".print.PrinterActivity" />
+        <activity android:name=".print.DeviceList" />
     </application>
 
 </manifest>

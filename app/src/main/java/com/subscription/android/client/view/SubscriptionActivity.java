@@ -35,6 +35,7 @@ import com.subscription.android.client.R;
 import com.subscription.android.client.model.Instructor;
 import com.subscription.android.client.model.Subscription;
 import com.subscription.android.client.model.VisitDate;
+import com.subscription.android.client.print.PrinterActivity;
 
 import java.io.EOFException;
 import java.net.ConnectException;
@@ -90,6 +91,12 @@ public class SubscriptionActivity extends BaseActivity {
         };
         btnOk.setOnClickListener(oclBtnOk);
 
+        insertNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               go2Print();
+            }
+        });
         hellouser.setText(getResources().getString(R.string.greetings) + " " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
         getSubscriptions();
         qrGenerator(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -115,7 +122,10 @@ public class SubscriptionActivity extends BaseActivity {
             }
         });
     }
-
+    private void go2Print() {
+        Intent intent = new Intent(this, PrinterActivity.class);
+        startActivity(intent);
+    }
     private void go2Main() {
         Intent intent = new Intent(this, EmailPasswordActivity.class);
         startActivity(intent);
