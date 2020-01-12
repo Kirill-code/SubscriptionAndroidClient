@@ -85,16 +85,12 @@ public class PrinterActivity extends Activity{
                 //outputStream.write(printformat);
 
                 //print title
-                printUnicode();
-                //print normal text
-                printCustom(message.getText().toString(),0,0);
+
                 printPhoto("hNDHlOIUf8XBnRZWnMvupYWOi7q2");
                 printNewLine();
-                printText("     >>>>   Спасибо  <<<<     "); // total 32 char in a single line
-                //resetPrint(); //reset printer
-                printUnicode();
                 printNewLine();
-                printNewLine();
+
+
 
                 outputStream.flush();
             } catch (IOException e) {
@@ -156,7 +152,7 @@ public class PrinterActivity extends Activity{
 
            QRCodeWriter writer = new QRCodeWriter();
             try {
-                BitMatrix bitMatrix = writer.encode("syryauid" + uid, BarcodeFormat.QR_CODE, 300, 250);
+                BitMatrix bitMatrix = writer.encode("syryauid" + uid, BarcodeFormat. QR_CODE, 300, 250);
                 int width = bitMatrix.getWidth();
                 int height = bitMatrix.getHeight();
                 Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);

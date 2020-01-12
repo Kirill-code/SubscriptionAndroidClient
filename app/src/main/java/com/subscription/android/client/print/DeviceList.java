@@ -54,14 +54,14 @@ public class DeviceList extends ListActivity {
 
         setTitle("Bluetooth Devices");
 
-        try {
+        /*try {
             if (initDevicesList() != 0) {
                 finish();
             }
 
         } catch (Exception ex) {
              finish();
-        }
+        }*/
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -70,7 +70,7 @@ public class DeviceList extends ListActivity {
                     new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                     REQUEST_COARSE_LOCATION);
         }else {
-            proceedDiscovery();
+            initDevicesList();
         }
     }
 
@@ -116,6 +116,7 @@ public class DeviceList extends ListActivity {
         }
 
     }
+
     private int initDevicesList() {
         flushData();
 
@@ -129,9 +130,19 @@ public class DeviceList extends ListActivity {
         if (mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
         }
-
+        Set<BluetoothDevice> btDeviceList = mBluetoothAdapter
+                .getBondedDevices();
         mArrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
                 R.layout.layout_list);
+        btDevices=new ArrayAdapter<BluetoothDevice>(
+                getApplicationContext(), R.layout.layout_list);
+        for (BluetoothDevice device : btDeviceList) {
+            btDevices.add(device);
+
+                mArrayAdapter.add(device.getName());
+        }
+        ;
+
 
         setListAdapter(mArrayAdapter);
 
@@ -168,13 +179,13 @@ public class DeviceList extends ListActivity {
                             for (BluetoothDevice device : btDeviceList) {
                                 if (btDeviceList.contains(device) == false) {
 
-                                    btDevices.add(device);
+                                  //  btDevices.add(device);
 
-                                    mArrayAdapter.add(device.getName() + "\n"
-                                            + device.getAddress());
-                                    mArrayAdapter.notifyDataSetInvalidated();
+                                    mArrayAdapter.add(device.getName());
+                                   // mArrayAdapter.notifyDataSetInvalidated();
                                 }
                             }
+                            setListAdapter(mArrayAdapter);
                         }
                     } catch (Exception ex) {
                         Log.e(TAG, ex.getMessage());
@@ -183,7 +194,7 @@ public class DeviceList extends ListActivity {
 
                 break;
         }
-        mBluetoothAdapter.startDiscovery();
+       // mBluetoothAdapter.startDiscovery();
 
     }
 
