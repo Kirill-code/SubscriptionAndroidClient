@@ -200,25 +200,21 @@ public class SubscriptionActivity extends BaseActivity {
                             call.enqueue(new Callback<Subscription>() {
                                 @Override
                                 public void onResponse(Call<Subscription> call, Response<Subscription> response) {
-                                    hideProgressDialog();
-                                    Subscription saveSub = response.body();
-                                    saveSub.setDescription("Android");
-                                    saveSub.setId(5);
-                                    List<VisitDate> visitDates = saveSub.getVisitDates();
-                                    visitDates.add(new VisitDate(visitDates.size() + 1, currentTime));
 
-                                    Call<Void> call2save = api.savesubscription(response.body());
+                                    Call<Void> call2save = api.savevisit(response.body().getAssociatedUserId());
 
                                     call2save.enqueue(new Callback<Void>() {
                                         @Override
                                         public void onResponse(Call<Void> call2save, Response<Void> response) {
                                             Log.i("VisitDate", "Succsessful");
+                                            hideProgressDialog();
                                             Toast.makeText(getApplicationContext(), "Ok", Toast.LENGTH_SHORT).show();
                                         }
 
                                         @Override
                                         public void onFailure(Call<Void> call2save, Throwable t) {
                                             Log.d("VisitDate", "UnSuccsessful");
+                                            hideProgressDialog();
                                         }
                                     });
                                 }

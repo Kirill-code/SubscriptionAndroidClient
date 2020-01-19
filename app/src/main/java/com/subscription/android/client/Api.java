@@ -3,6 +3,7 @@ package com.subscription.android.client;
 
 import com.subscription.android.client.model.Subscription;
 import com.subscription.android.client.model.User;
+import com.subscription.android.client.model.VisitDate;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ import retrofit2.http.Path;
 
 public interface Api {
     //TODO propertie file
-     static final String BASE_URL = "http://94.177.240.97:8080/subscription/";
+    String BASE_URL = "http://192.168.31.27:8080/";
 
     @GET("users")
     Call<List<User>> getAdminEmails(@Header("token") String token);
@@ -28,5 +29,7 @@ public interface Api {
     Call<Void> registerAdmin(@Header("token") String token,@Header("uid") String uid);
     @POST("savesubscriptions")
     Call<Void> savesubscription(@Body Subscription subscription);
+    @POST("savenewvisit")
+    Call<Void> savevisit(@Body String uid);
 
 }

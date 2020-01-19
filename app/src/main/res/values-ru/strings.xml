@@ -93,4 +93,17 @@
     <string name="forgotpswd">Я забыл пароль.</string>
     <string name="repeatlater">Please repeat later.</string>
     <string name="exit">Для выхода нажмите назад еще раз.</string>
+    <string name="btnPrint">Печать абонемента</string>
+    <string name="prompt_email">Введите email</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_sign_in_short">Пожалуйста введите пароль</string>
+    <string name="action_sign_in">Регистрация</string>
+    <string name="usrName">Имя</string>
+    <string name="usrSurName">Фамилия</string>
+    <string name="usrPhone">Телефон</string>
+    <string name="btnNewUsr">Новый абонемент</string>
+    <string name="usernameError">First name is required</string>
+    <string name="usersurnameError">Surname is required!</string>
+    <string name="userPhoneError">Phone is required!</string>
+    <string name="userEmailError">Email is required!</string>
 </resources>

@@ -96,4 +96,17 @@
     <string name="forgotpswd">I forgot password.</string>
     <string name="repeatlater">Please repeat later.</string>
     <string name="exit">Press the back button once again to close the application.</string>
+    <string name="btnPrint">Print subscription</string>
+    <string name="prompt_email">Enter email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in_short">Please enter password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="usrName">Name</string>
+    <string name="usrSurName">Surname</string>
+    <string name="usrPhone">Phone</string>
+    <string name="btnNewUsr">New Subscription</string>
+    <string name="usernameError">First name is required</string>
+    <string name="usersurnameError">Surname is required!</string>
+    <string name="userPhoneError">Phone is required!</string>
+    <string name="userEmailError">Email is required!</string>
 </resources>

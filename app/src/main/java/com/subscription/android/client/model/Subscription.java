@@ -17,7 +17,10 @@ public class Subscription {
             price,
             instructorId;
 
-    private String userid,
+    private String associatedUserId,
+            userName,
+            userSurName,
+            userMobile,
             description,
             instrName,
             instrSurname;
@@ -62,12 +65,36 @@ public class Subscription {
         this.instructorId = instructorId;
     }
 
-    public String getUserid() {
-        return userid;
+    public String getAssociatedUserId() {
+        return associatedUserId;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setAssociatedUserId(String associatedUserId) {
+        this.associatedUserId = associatedUserId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserSurName() {
+        return userSurName;
+    }
+
+    public void setUserSurName(String userSurName) {
+        this.userSurName = userSurName;
+    }
+
+    public String getUserMobile() {
+        return userMobile;
+    }
+
+    public void setUserMobile(String userMobile) {
+        this.userMobile = userMobile;
     }
 
     public String getDescription() {

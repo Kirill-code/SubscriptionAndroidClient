@@ -21,6 +21,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.subscription.android.client.R;
+import com.subscription.android.client.view.saleExistingUser;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,8 +31,7 @@ import java.util.Calendar;
 
 public class PrinterActivity extends Activity{
     private String TAG = "Print Activity";
-    EditText message;
-    Button btnPrint;
+    Button btnPrint, btnNewUsr;
 
 
     byte FONT_TYPE;
@@ -42,8 +42,8 @@ public class PrinterActivity extends Activity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_print);
-        message = (EditText)findViewById(R.id.txtMessage);
         btnPrint = (Button)findViewById(R.id.btnPrint);
+        btnNewUsr = (Button)findViewById(R.id.btnNewUsr);
 
 
         btnPrint.setOnClickListener(new OnClickListener() {
@@ -53,8 +53,19 @@ public class PrinterActivity extends Activity{
                 printDemo();
             }
         });
+        btnNewUsr.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                go2NewUser();
+            }
+        });
 
 
+    }
+    private void go2NewUser() {
+        Intent intent = new Intent(this, saleExistingUser.class);
+        startActivity(intent);
     }
 
 
@@ -82,9 +93,6 @@ public class PrinterActivity extends Activity{
                 outputStream = btsocket.getOutputStream();
 
                 byte[] printformat = { 0x1B, 0*21, FONT_TYPE };
-                //outputStream.write(printformat);
-
-                //print title
 
                 printPhoto("hNDHlOIUf8XBnRZWnMvupYWOi7q2");
                 printNewLine();
