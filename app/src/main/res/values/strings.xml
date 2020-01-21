@@ -109,4 +109,5 @@
     <string name="usersurnameError">Surname is required!</string>
     <string name="userPhoneError">Phone is required!</string>
     <string name="userEmailError">Email is required!</string>
+    <string name="scanSucsessful">Checked</string>
 </resources>

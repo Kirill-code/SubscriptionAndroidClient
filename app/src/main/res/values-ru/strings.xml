@@ -102,8 +102,9 @@
     <string name="usrSurName">Фамилия</string>
     <string name="usrPhone">Телефон</string>
     <string name="btnNewUsr">Новый абонемент</string>
-    <string name="usernameError">First name is required</string>
-    <string name="usersurnameError">Surname is required!</string>
-    <string name="userPhoneError">Phone is required!</string>
-    <string name="userEmailError">Email is required!</string>
+    <string name="usernameError">Имя обязательно</string>
+    <string name="usersurnameError">Фамилия обязательна!</string>
+    <string name="userPhoneError">Телефон обязателен!</string>
+    <string name="userEmailError">Почта обязательна!</string>
+    <string name="scanSucsessful">Успешно</string>
 </resources>

@@ -9,6 +9,12 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
+
+
+
+
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -31,6 +37,16 @@
         <activity android:name=".view.saleExistingUser" />
         <activity android:name=".print.PrinterActivity" />
         <activity android:name=".print.DeviceList" />
+        <activity android:name=".NFC.NFC" >
+        <intent-filter>
+            <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="text/plain" />
+        </intent-filter>
+        <meta-data
+            android:name="android.nfc.action.TECH_DISCOVERED"
+            android:resource="@xml/nfc_tech_filter" />
+        </activity>
 
     </application>
 

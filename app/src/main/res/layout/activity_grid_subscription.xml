@@ -49,6 +49,14 @@
             android:layout_weight="1"
             android:contentDescription="@string/photoScan"
             app:srcCompat="@drawable/qr_code" />
+
+        <ImageButton
+            android:id="@+id/nfcscan"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/photoScan"
+            app:srcCompat="@drawable/nfc_logo" />
     </LinearLayout>
 
     <LinearLayout
@@ -97,7 +105,6 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="@logo"
-        app:srcCompat="@mipmap/logo" />
+        app:srcCompat="@drawable/logovrn" />
 
 </LinearLayout>

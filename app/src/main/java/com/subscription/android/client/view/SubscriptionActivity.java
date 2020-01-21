@@ -31,6 +31,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.subscription.android.client.Api;
 import com.subscription.android.client.BaseActivity;
 import com.subscription.android.client.BuildConfig;
+import com.subscription.android.client.NFC.NFC;
 import com.subscription.android.client.R;
 import com.subscription.android.client.model.Instructor;
 import com.subscription.android.client.model.Subscription;
@@ -54,7 +55,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SubscriptionActivity extends BaseActivity {
     GridView gvMain;
-    ImageButton btnOk, btStartScan, imageSignOut, insertNew;
+    ImageButton btnOk, btStartScan, imageSignOut, insertNew, nfcScan;
     TextView hellouser, instructorName, exCost;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Date currentTime = Calendar.getInstance().getTime();
@@ -82,6 +83,7 @@ public class SubscriptionActivity extends BaseActivity {
         imageSignOut = findViewById(R.id.imageSignOut);
         btStartScan = findViewById(R.id.photoScan);
         insertNew = findViewById(R.id.createnewsub);
+        nfcScan = findViewById(R.id.nfcscan);
 
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
             @Override
@@ -90,6 +92,13 @@ public class SubscriptionActivity extends BaseActivity {
             }
         };
         btnOk.setOnClickListener(oclBtnOk);
+
+        nfcScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                go2NFC();
+            }
+        });
 
         insertNew.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,6 +137,10 @@ public class SubscriptionActivity extends BaseActivity {
     }
     private void go2Main() {
         Intent intent = new Intent(this, EmailPasswordActivity.class);
+        startActivity(intent);
+    }
+    private void go2NFC() {
+        Intent intent = new Intent(this, NFC.class);
         startActivity(intent);
     }
     @Override
@@ -208,7 +221,7 @@ public class SubscriptionActivity extends BaseActivity {
                                         public void onResponse(Call<Void> call2save, Response<Void> response) {
                                             Log.i("VisitDate", "Succsessful");
                                             hideProgressDialog();
-                                            Toast.makeText(getApplicationContext(), "Ok", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getApplicationContext(), getResources().getText(R.string.scanSucsessful), Toast.LENGTH_SHORT).show();
                                         }
 
                                         @Override
