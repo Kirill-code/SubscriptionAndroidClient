@@ -97,14 +97,15 @@
     <ImageView
         android:id="@+id/img_result_qr"
         android:layout_width="match_parent"
-        android:layout_height="243dp"
+        android:layout_height="250dp"
         android:contentDescription="@string/qrCode"
         app:srcCompat="@android:drawable/ic_menu_help" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:srcCompat="@drawable/logovrn" />
+        android:layout_height="200dp"
+        android:layout_marginTop="10dp"
+        app:srcCompat="@drawable/gerbvrn" />
 
 </LinearLayout>

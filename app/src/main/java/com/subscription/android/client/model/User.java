@@ -4,27 +4,41 @@ package com.subscription.android.client.model;
  * Created by Kirill_code on 25.01.2019.
  */
 public class User {
-    String uid, email;
-  /*  Boolean adminclaim;
-    public Boolean getAdminclaim() {
-        return adminclaim;
+
+    private long id;
+
+    String name, surname,uid,email,mobile;
+
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setAdminclaim(boolean adminclaim) {
-        this.adminclaim = adminclaim;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
-    public User(String uid, String email, Boolean adminClaim) {
-        this.uid = uid;
-        this.email = email;
-      this.adminclaim=adminClaim;
-
+    public long getId() {
+        return id;
     }
-*/
 
-    public User(String uid, String email) {
-        this.uid = uid;
-        this.email = email;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public String getUid() {
