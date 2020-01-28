@@ -34,7 +34,8 @@
         <activity android:name=".view.SubscriptionActivity" />
         <activity android:name=".BaseActivity" />
         <activity android:name=".view.AdminActivity" />
-        <activity android:name=".view.saleExistingUser" />
+        <activity android:name=".view.saleExistingUser" >
+        </activity>
         <activity android:name=".print.PrinterActivity" />
         <activity android:name=".print.DeviceList" />
         <activity android:name=".NFC.NFC" >

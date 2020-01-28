@@ -1,5 +1,6 @@
 package com.subscription.android.client.view;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,6 +8,8 @@ import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -20,7 +23,7 @@ import com.subscription.android.client.Api;
 import com.subscription.android.client.BaseActivity;
 import com.subscription.android.client.R;
 import com.subscription.android.client.model.Price;
-import com.subscription.android.client.model.Subscription;
+import com.subscription.android.client.model.User;
 
 import java.io.EOFException;
 import java.net.ConnectException;
@@ -38,6 +41,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Kirill_code on 06.02.2019.
  */
 public class saleExistingUser extends BaseActivity {
+    private static final String TAG = saleExistingUser.class.getName();;
+
     Button signIn;
     EditText userName, userSurname, usrPhone, usrEmail, usrPswd;
     long subCount ;
@@ -49,7 +54,11 @@ public class saleExistingUser extends BaseActivity {
     Api api = retrofit.create(Api.class);
     CarouselPicker carouselPicker;
     List<CarouselPicker.PickerItem> textItems = new ArrayList<>();
+    List<String> usersTmp=new ArrayList<>();
     CarouselPicker.CarouselViewAdapter textAdapter;
+    private AutoCompleteTextView autoTextView;
+    ArrayAdapter<String> usersAdapter;
+
 
 
 
@@ -58,17 +67,25 @@ public class saleExistingUser extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_user);
         getPrice();
+        getUsers();
+
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            //doMySearch(query);
+        }
 
         signIn = (Button) findViewById(R.id.login);
-        userName = (EditText) findViewById(R.id.usrName);
-        userSurname = (EditText) findViewById(R.id.usrSurName);
+        autoTextView = findViewById(R.id.autoTextView);
         usrPhone = (EditText) findViewById(R.id.usrPhone);
         usrEmail = (EditText) findViewById(R.id.usrEmail);
         usrPswd = (EditText) findViewById(R.id.usrPassword);
+        autoTextView.setThreshold(1); //will start working from first character
+
 
         carouselPicker = (CarouselPicker) findViewById(R.id.carousel);
-//20 here represents the textSize in dp, change it to the value you want.
-         textAdapter= new CarouselPicker.CarouselViewAdapter(this, textItems, 0);
+        textAdapter= new CarouselPicker.CarouselViewAdapter(this, textItems, 0);
+        usersAdapter=  new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, usersTmp);
 
 
 
@@ -95,15 +112,10 @@ public class saleExistingUser extends BaseActivity {
 
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(userName.getText())) {
-                    userName.setError(getResources().getText(R.string.usernameError));
+                if (TextUtils.isEmpty(autoTextView.getText())) {
+                    autoTextView.setError(getResources().getText(R.string.usernameError));
                 } else {
-                    userName.setError(null);
-                }
-                if (TextUtils.isEmpty(userSurname.getText())) {
-                    userSurname.setError(getResources().getText(R.string.usersurnameError));
-                } else {
-                    userSurname.setError(null);
+                    autoTextView.setError(null);
                 }
                 if (TextUtils.isEmpty(usrPhone.getText())) {
                     usrPhone.setError(getResources().getText(R.string.userPhoneError));
@@ -120,13 +132,13 @@ public class saleExistingUser extends BaseActivity {
                 } else {
                     usrPswd.setError(null);
                 }
-                if (!TextUtils.isEmpty(userName.getText())
-                        && !TextUtils.isEmpty(userSurname.getText())
+                if (!TextUtils.isEmpty(autoTextView.getText())
                         && !TextUtils.isEmpty(usrPhone.getText())
                         && !TextUtils.isEmpty(usrEmail.getText())
                         && !TextUtils.isEmpty(usrPswd.getText())) {
                     Toast.makeText(getApplicationContext(), " "+subCount,
                             Toast.LENGTH_SHORT).show();
+                    //TODO user entity call for create new record
                 }
             }
         });
@@ -149,7 +161,7 @@ public class saleExistingUser extends BaseActivity {
                                 public void onResponse(Call<List<Price>> call, Response<List<Price>> response) {
                                 priceList=response.body();
                                 for(Price price:priceList){
-                                    textItems.add(new CarouselPicker.TextItem(String.format("%d",price.getNumbers()), 20));
+                                    textItems.add(new CarouselPicker.TextItem(String.format("%d",price.getNumbers()), 20)); //textSize in dp
                                 }
                                     subCount=priceList.get(0).getCost();
                                     carouselPicker.setAdapter(textAdapter);
@@ -162,18 +174,78 @@ public class saleExistingUser extends BaseActivity {
                                     try {
                                         throw t;
                                     } catch (ConnectException ex) {
+                                        Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
-
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.errorconnection) ,
+                                                Toast.LENGTH_SHORT).show();
                                     } catch (EOFException ex) {
+                                        Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
-                                        String[] visitedDates = {getResources().getString(R.string.emptylessons)};
-
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                                Toast.LENGTH_SHORT).show();
                                     } catch (Throwable et) {
-                                        hideProgressDialog();
-                                        String[] visitedDates = {getResources().getString(R.string.helpdesk)};
+                                        Log.e(TAG, et.getMessage());
 
-                                        Log.d("SubActivityBigProblem", t.getMessage());
-                                        Log.d("SubActivityBigProblem", et.getMessage());
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                                Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }
+                            });
+
+                        } else {
+                            Log.e("CallbackException", task.getException().toString());
+                        }
+                    }
+                });
+    }
+    private void getUsers() {
+
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mUser.getIdToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+                            String idToken = task.getResult().getToken();
+
+                            showProgressDialog();
+
+                            Call<List<User>> call = api.getUsersList(idToken);
+                            call.enqueue(new Callback<List<User>>() {
+                                @Override
+                                public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                                    List<User> users=response.body();
+                                    for(User user:users){
+                                        usersAdapter.add(user.getName()+" "+user.getSurname());
+                                    }
+                                   autoTextView.setAdapter(usersAdapter);
+
+                                    hideProgressDialog();
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<List<User>> call, Throwable t) {
+                                    try {
+                                        throw t;
+                                    } catch (ConnectException ex) {
+                                        Log.e(TAG, ex.getMessage());
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.errorconnection) ,
+                                                Toast.LENGTH_SHORT).show();
+                                    } catch (EOFException ex) {
+                                        Log.e(TAG, ex.getMessage());
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                                Toast.LENGTH_SHORT).show();
+                                    } catch (Throwable et) {
+                                        Log.e(TAG, et.getMessage());
+
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                                Toast.LENGTH_SHORT).show();
+
                                     }
                                 }
                             });

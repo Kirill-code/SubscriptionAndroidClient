@@ -31,7 +31,11 @@ import com.subscription.android.client.BaseActivity;
 import com.subscription.android.client.fragments.Dialog2;
 import com.subscription.android.client.model.User;
 
+import java.io.EOFException;
+import java.net.ConnectException;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
+
 import com.subscription.android.client.R;
 
 import retrofit2.Call;
@@ -46,6 +50,7 @@ public class AdminActivity extends BaseActivity {
     public static String msgAdmin;
     static String[] uids;
 
+    private static final String TAG = AdminActivity.class.getName();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,9 +122,26 @@ public class AdminActivity extends BaseActivity {
 
                                 @Override
                                 public void onFailure(Call<List<User>> call, Throwable t) {
-                                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                                    System.out.println(t.getMessage());
-                                    t.printStackTrace();
+                                    try {
+                                        throw t;
+                                    } catch (ConnectException ex) {
+                                        Log.e(TAG, ex.getMessage());
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.errorconnection) ,
+                                                Toast.LENGTH_SHORT).show();
+                                    } catch (TimeoutException ex) {
+                                        Log.e(TAG, ex.getMessage());
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.timeout) ,
+                                                Toast.LENGTH_SHORT).show();
+                                    } catch (Throwable et) {
+                                        Log.e(TAG, et.getMessage());
+
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                                Toast.LENGTH_SHORT).show();
+
+                                    }
                                 }
                             });
 

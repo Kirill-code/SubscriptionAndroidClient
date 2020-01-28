@@ -3,19 +3,28 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:gravity="center"
+    >
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="46dp"
-        android:text="Hello Admin"></TextView>
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#D50000">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/adminview" />
+    </android.support.v7.widget.Toolbar>
 
     <ListView
         android:id="@+id/listViewAdmins"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:background="@color/colorPrimaryDark"
-        android:divider="@mipmap/ic_launcher"
+        android:layout_height="wrap_content"
+        android:background="#f9e1cb"
+        android:divider="@android:drawable/divider_horizontal_textfield"
         android:visibility="visible">
 
     </ListView>

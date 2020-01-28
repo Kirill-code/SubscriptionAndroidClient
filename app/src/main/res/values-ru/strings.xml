@@ -82,23 +82,23 @@
     <string name="greetings">Привет</string>
     <string name="networkissue">Network issue, please retry</string>
     <string name="bigIssue">Please contact with helpdesk</string>
-    <string name="helpdesk">Please contact with helpdesk.</string>
-    <string name="emptylessons">You have not attended any classes yet</string>
-    <string name="errorconnection">Internet connetctions problem. Please retry.</string>
-    <string name="qrscanerror">Wrong QR code</string>
+    <string name="helpdesk">Пожалуйста свяжитесь с поддержкой.</string>
+    <string name="emptylessons">Вы не посетили еще ниодного занятия</string>
+    <string name="errorconnection">Проблемы с соединением, попробуйте позже.</string>
+    <string name="qrscanerror">Неверный QR код</string>
     <string name="formerror">Обязательно.</string>
     <string name="verificationmsg" >Проверочное письмо отправлено</string>
     <string name="verificationerror" >Ошибка отправки.</string>
     <string name="reset_account">"Письмо отправлено на "</string>
     <string name="forgotpswd">Я забыл пароль.</string>
-    <string name="repeatlater">Please repeat later.</string>
+    <string name="repeatlater">Попробуйте позже.</string>
     <string name="exit">Для выхода нажмите назад еще раз.</string>
     <string name="btnPrint">Печать абонемента</string>
     <string name="prompt_email">Введите email</string>
     <string name="prompt_password">Пароль</string>
     <string name="action_sign_in_short">Пожалуйста введите пароль</string>
     <string name="action_sign_in">Регистрация</string>
-    <string name="usrName">Имя</string>
+    <string name="usrName">Имя Фамилия</string>
     <string name="usrSurName">Фамилия</string>
     <string name="usrPhone">Телефон</string>
     <string name="btnNewUsr">Новый абонемент</string>
@@ -107,4 +107,7 @@
     <string name="userPhoneError">Телефон обязателен!</string>
     <string name="userEmailError">Почта обязательна!</string>
     <string name="scanSucsessful">Успешно</string>
+    <string name="adminview">Назначение администратора</string>
+    <string name="timeout">Таймаут, попробуйте позже или свяжитесь с поддержкой</string>
+    <string name="search_hint">user search</string>
 </resources>

@@ -72,7 +72,7 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
                                     response.body();
                                     Log.d("AssignAdmin", "Admin rights assigned "+uid);
                                     flagResponse=true;
-                                    notifyUser();
+                                    //
                        }
 
                                 @Override
@@ -106,6 +106,7 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
                 i = R.string.yes;
                 try{
                   assignAdmins(uid);
+                    notifyUser();
                 }
                 catch (Exception ex){
                     ex.printStackTrace();

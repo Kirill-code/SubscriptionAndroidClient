@@ -101,7 +101,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in_short">Please enter password</string>
     <string name="action_sign_in">Sign in</string>
-    <string name="usrName">Name</string>
+    <string name="usrName">Name and Surname</string>
     <string name="usrSurName">Surname</string>
     <string name="usrPhone">Phone</string>
     <string name="btnNewUsr">New Subscription</string>
@@ -110,4 +110,7 @@
     <string name="userPhoneError">Phone is required!</string>
     <string name="userEmailError">Email is required!</string>
     <string name="scanSucsessful">Checked</string>
+    <string name="adminview">Admin assignment</string>
+    <string name="timeout">Timeout, please retry or contact helpdesk</string>
+    <string name="search_hint">user search</string>
 </resources>

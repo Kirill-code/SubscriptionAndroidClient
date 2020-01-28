@@ -54,6 +54,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SubscriptionActivity extends BaseActivity {
+    private static final String TAG = SubscriptionActivity.class.getName();;
+
     GridView gvMain;
     ImageButton btnOk, btStartScan, imageSignOut, insertNew, nfcScan;
     TextView hellouser, instructorName, exCost;
@@ -71,7 +73,7 @@ public class SubscriptionActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        Log.d("SubActivity", "Activity started");
+        Log.i(TAG, "Activity started");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid_subscription);
 
@@ -166,15 +168,16 @@ public class SubscriptionActivity extends BaseActivity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
-                Log.e("Scan*******", "Cancelled scan");
+                Log.i(TAG, "Cancelled scan");
 
             } else {
                 System.out.println(result.getContents().substring(0, 7));
                 if (result.getContents().substring(0, 8).equals("syryauid")) {
-                    Log.e("Scan", "Scanned:" + result.getContents());
+                    Log.i(TAG, "Scanned:" + result.getContents());
                     updateText(result.getContents().substring(8));
                     updateSubscription(result.getContents().substring(8));
                 } else {
+                    Log.e(TAG, result.getContents());
                     Toast.makeText(getApplicationContext(), getResources().getText(R.string.qrscanerror),
                             Toast.LENGTH_SHORT).show();
                 }
@@ -219,15 +222,15 @@ public class SubscriptionActivity extends BaseActivity {
                                     call2save.enqueue(new Callback<Void>() {
                                         @Override
                                         public void onResponse(Call<Void> call2save, Response<Void> response) {
-                                            Log.i("VisitDate", "Succsessful");
                                             hideProgressDialog();
                                             Toast.makeText(getApplicationContext(), getResources().getText(R.string.scanSucsessful), Toast.LENGTH_SHORT).show();
                                         }
 
                                         @Override
                                         public void onFailure(Call<Void> call2save, Throwable t) {
-                                            Log.d("VisitDate", "UnSuccsessful");
+                                            Log.e(TAG, t.getMessage());
                                             hideProgressDialog();
+                                            Toast.makeText(getApplicationContext(), getResources().getText(R.string.repeatlater), Toast.LENGTH_SHORT).show();
                                         }
                                     });
                                 }
@@ -238,24 +241,26 @@ public class SubscriptionActivity extends BaseActivity {
                                         throw t;
                                     } catch (ConnectException ex) {
                                         hideProgressDialog();
+                                        Log.e(TAG, ex.getMessage());
                                         String[] visitedDates = {getResources().getString(R.string.errorconnection)};
                                         gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
                                     } catch (EOFException ex) {
+                                        Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
                                         String[] visitedDates = {getResources().getString(R.string.emptylessons)};
                                         gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
                                     } catch (Throwable et) {
+                                        Log.e(TAG, et.getMessage());
                                         hideProgressDialog();
                                         String[] visitedDates = {getResources().getString(R.string.helpdesk)};
                                         gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
-                                        Log.d("SubActivityBigProblem", t.getMessage());
-                                        Log.d("SubActivityBigProblem", et.getMessage());
+
                                     }
                                 }
                             });
 
                         } else {
-                            Log.e("CallbackException", task.getException().toString());
+                            Log.e(TAG, task.getException().toString());
                         }
                     }
                 });
@@ -279,7 +284,7 @@ public class SubscriptionActivity extends BaseActivity {
                                         hideProgressDialog();
                                         String[] visitedDates = {getResources().getString(R.string.helpdesk)};
                                         gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
-                                        Log.d("SubActivityBigProblem", "Empty response");
+                                        Log.e(TAG, "Empty response");
                                     } else {
                                         hideProgressDialog();
                                         List<VisitDate> dates = response.body().getVisitDates();
@@ -303,19 +308,21 @@ public class SubscriptionActivity extends BaseActivity {
                                     try {
                                         throw t;
                                     } catch (ConnectException ex) {
+                                        Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
                                         String[] visitedDates = {getResources().getString(R.string.errorconnection)};
                                         gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
                                     } catch (EOFException ex) {
+                                        Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
                                         String[] visitedDates = {getResources().getString(R.string.emptylessons)};
                                         gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
                                     } catch (Throwable et) {
+                                        Log.e(TAG, et.getMessage());
                                         hideProgressDialog();
                                         String[] visitedDates = {getResources().getString(R.string.helpdesk)};
                                         gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
-                                        Log.d("SubActivityBigProblem", t.getMessage());
-                                        Log.d("SubActivityBigProblem", et.getMessage());
+
                                     }
                                 }
                             });
@@ -348,7 +355,7 @@ public class SubscriptionActivity extends BaseActivity {
             ((ImageView) findViewById(R.id.img_result_qr)).setImageBitmap(bmp);
 
         } catch (WriterException e) {
-            Log.d("QRcodeError", e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
     }
 }
