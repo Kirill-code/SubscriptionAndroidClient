@@ -36,5 +36,7 @@ public interface Api {
     Call<Void> savesubscription(@Body Subscription subscription);
     @POST("savenewvisit")
     Call<Void> savevisit(@Body String uid);
+    @POST("createnewuser")
+    Call<Void> newUser(@Body User user);
 
 }

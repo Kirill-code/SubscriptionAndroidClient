@@ -16,7 +16,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.Api;
@@ -58,6 +61,8 @@ public class saleExistingUser extends BaseActivity {
     CarouselPicker.CarouselViewAdapter textAdapter;
     private AutoCompleteTextView autoTextView;
     ArrayAdapter<String> usersAdapter;
+    private FirebaseAuth mAuth;
+
 
 
 
@@ -74,7 +79,7 @@ public class saleExistingUser extends BaseActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
             //doMySearch(query);
         }
-
+        mAuth = FirebaseAuth.getInstance();
         signIn = (Button) findViewById(R.id.login);
         autoTextView = findViewById(R.id.autoTextView);
         usrPhone = (EditText) findViewById(R.id.usrPhone);
@@ -139,10 +144,104 @@ public class saleExistingUser extends BaseActivity {
                     Toast.makeText(getApplicationContext(), " "+subCount,
                             Toast.LENGTH_SHORT).show();
                     //TODO user entity call for create new record
+                        User newUser=new User();
+                            newUser.setEmail(usrEmail.getText().toString());
+                            newUser.setName(autoTextView.getText().toString().substring(0,autoTextView.getText().toString().indexOf(" ")));
+                            newUser.setSurname(autoTextView.getText().toString().substring(autoTextView.getText().toString().indexOf(" ")+1));
+                            newUser.setMobile(usrPhone.getText().toString());
+                        createAccount(newUser,usrPswd.getText().toString());
+
+
+
                 }
             }
         });
 
+    }
+    private void createAccount(User newUser, String password)  {
+
+        showProgressDialog();
+
+        mAuth.createUserWithEmailAndPassword(newUser.getEmail(), password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task)  {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            newUser.setUid(user.getUid());
+                            createNewUser(newUser);
+
+                            /*нужно создать новый абонемент и пользователя
+                            updateUI(user);*/
+                    }else {
+                            try {
+                                throw task.getException();
+                            }  catch(FirebaseAuthUserCollisionException e) {
+                                /*создаю только новый абонемент*/
+
+                            } catch (Exception e) {
+                                Log.e(TAG, e.getMessage());
+                            }
+
+
+                        }
+                    }
+                });
+    }
+
+    private void createNewUser(User newUser){
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mUser.getIdToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+                            String idToken = task.getResult().getToken();
+
+                            showProgressDialog();
+
+                            Call<Void> call = api.newUser(newUser);
+                            call.enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    hideProgressDialog();
+
+                                    Log.i(TAG, "User "+newUser.getUid()+" created");
+                                    Toast.makeText(getApplicationContext(),"User "+newUser.getUid()+" created" ,
+                                            Toast.LENGTH_SHORT).show();
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    try {
+                                        throw t;
+                                    } catch (ConnectException ex) {
+                                        Log.e(TAG, ex.getMessage());
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.errorconnection) ,
+                                                Toast.LENGTH_SHORT).show();
+                                    } catch (EOFException ex) {
+                                        Log.e(TAG, ex.getMessage());
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                                Toast.LENGTH_SHORT).show();
+                                    } catch (Throwable et) {
+                                        Log.e(TAG, et.getMessage());
+
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                                Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }
+                            });
+
+                        } else {
+                            Log.e("CallbackException", task.getException().toString());
+                        }
+                    }
+                });
     }
     private void getPrice() {
 
@@ -161,7 +260,8 @@ public class saleExistingUser extends BaseActivity {
                                 public void onResponse(Call<List<Price>> call, Response<List<Price>> response) {
                                 priceList=response.body();
                                 for(Price price:priceList){
-                                    textItems.add(new CarouselPicker.TextItem(String.format("%d",price.getNumbers()), 20)); //textSize in dp
+                                    textItems.add(new CarouselPicker.TextItem(String.format("%d",price.getNumbers()), 20)); //I'm not proud of it
+
                                 }
                                     subCount=priceList.get(0).getCost();
                                     carouselPicker.setAdapter(textAdapter);
