@@ -1,12 +1,13 @@
 package com.subscription.android.client.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Kirill_code on 06.02.2019.
  */
-public class Instructor {
+public class Instructor implements Serializable {
 
 
     private long id;

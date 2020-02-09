@@ -21,17 +21,21 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.subscription.android.client.R;
+import com.subscription.android.client.model.Instructor;
 import com.subscription.android.client.view.saleExistingUser;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 
 
-public class PrinterActivity extends Activity{
+public class PrinterActivity extends Activity implements Serializable {
     private String TAG = "Print Activity";
     Button btnPrint, btnNewUsr;
+
+    Instructor intentInstructor=new Instructor();
 
 
     byte FONT_TYPE;
@@ -42,9 +46,12 @@ public class PrinterActivity extends Activity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_print);
+
         btnPrint = (Button)findViewById(R.id.btnPrint);
         btnNewUsr = (Button)findViewById(R.id.btnNewUsr);
 
+        Intent i = getIntent();
+        intentInstructor = (Instructor)i.getSerializableExtra("Instructor2Sub");
 
         btnPrint.setOnClickListener(new OnClickListener() {
 
@@ -65,6 +72,8 @@ public class PrinterActivity extends Activity{
     }
     private void go2NewUser() {
         Intent intent = new Intent(this, saleExistingUser.class);
+        intent.putExtra("Instructor2Sub", intentInstructor);
+
         startActivity(intent);
     }
 
@@ -94,7 +103,7 @@ public class PrinterActivity extends Activity{
 
                 byte[] printformat = { 0x1B, 0*21, FONT_TYPE };
 
-                printPhoto("hNDHlOIUf8XBnRZWnMvupYWOi7q2");
+                printPhoto("GXKxfbt5R9hrbLjg4SfaOwIasY52");
                 printNewLine();
                 printNewLine();
 

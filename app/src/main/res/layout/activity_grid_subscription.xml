@@ -90,14 +90,15 @@
     <GridView
         android:id="@+id/gvMain"
         android:layout_width="match_parent"
-        android:layout_height="145dp">
+        android:layout_height="150dp">
 
     </GridView>
 
     <ImageView
         android:id="@+id/img_result_qr"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="40dp"
         android:contentDescription="@string/qrCode"
         app:srcCompat="@android:drawable/ic_menu_help" />
 
@@ -106,6 +107,6 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_marginTop="10dp"
-        app:srcCompat="@drawable/gerbvrn" />
+        app:srcCompat="@mipmap/logo" />
 
 </LinearLayout>

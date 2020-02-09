@@ -39,6 +39,7 @@ import com.subscription.android.client.model.VisitDate;
 import com.subscription.android.client.print.PrinterActivity;
 
 import java.io.EOFException;
+import java.io.Serializable;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,7 +54,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SubscriptionActivity extends BaseActivity {
+public class SubscriptionActivity extends BaseActivity  {
     private static final String TAG = SubscriptionActivity.class.getName();;
 
     GridView gvMain;
@@ -62,6 +63,10 @@ public class SubscriptionActivity extends BaseActivity {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Date currentTime = Calendar.getInstance().getTime();
     int backButtonCount=0;
+
+    Instructor intentInstructor=new Instructor();
+
+
 
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(Api.BASE_URL)
@@ -135,6 +140,8 @@ public class SubscriptionActivity extends BaseActivity {
     }
     private void go2Print() {
         Intent intent = new Intent(this, PrinterActivity.class);
+        intent.putExtra("Instructor2Sub", intentInstructor);
+
         startActivity(intent);
     }
     private void go2Main() {
@@ -297,6 +304,10 @@ public class SubscriptionActivity extends BaseActivity {
                                         for (int i = 0; i < dates.size(); i++) {
                                             visitedDates[i] = dates.get(i).getDate().toString();
                                         }
+
+                                        intentInstructor.setId(response.body().getInstructorId());
+                                        intentInstructor.setName(response.body().getInstrName());
+                                        intentInstructor.setSurname(response.body().getInstrSurname());
 
                                         gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
                                         adjustGridView();

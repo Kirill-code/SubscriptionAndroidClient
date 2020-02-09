@@ -18,7 +18,7 @@ import retrofit2.http.Path;
 
 public interface Api {
     //TODO propertie file
-   // String BASE_URL = "http://185.35.67.65:8080/subscription-server/";
+  // String BASE_URL = "http://185.35.67.65:8080/subscription-server/";
    String BASE_URL = "http://192.168.31.27:8080/";
     @GET("admins")
     Call<List<User>> getAdminEmails(@Header("token") String token);

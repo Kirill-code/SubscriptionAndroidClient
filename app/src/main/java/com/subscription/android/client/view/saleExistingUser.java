@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -25,6 +27,7 @@ import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.Api;
 import com.subscription.android.client.BaseActivity;
 import com.subscription.android.client.R;
+import com.subscription.android.client.model.Instructor;
 import com.subscription.android.client.model.Price;
 import com.subscription.android.client.model.User;
 
@@ -44,11 +47,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Kirill_code on 06.02.2019.
  */
 public class saleExistingUser extends BaseActivity {
-    private static final String TAG = saleExistingUser.class.getName();;
+    private static final String TAG = saleExistingUser.class.getName();
+    ;
 
     Button signIn;
     EditText userName, userSurname, usrPhone, usrEmail, usrPswd;
-    long subCount ;
+    long subCount;
     List<Price> priceList;
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(Api.BASE_URL)
@@ -57,14 +61,13 @@ public class saleExistingUser extends BaseActivity {
     Api api = retrofit.create(Api.class);
     CarouselPicker carouselPicker;
     List<CarouselPicker.PickerItem> textItems = new ArrayList<>();
-    List<String> usersTmp=new ArrayList<>();
+    List<String> usersTmp = new ArrayList<>();
     CarouselPicker.CarouselViewAdapter textAdapter;
     private AutoCompleteTextView autoTextView;
     ArrayAdapter<String> usersAdapter;
-    private FirebaseAuth mAuth;
-
-
-
+    private FirebaseAuth mAuth1;
+    private FirebaseAuth mAuth2;
+    Instructor intentInstructor = new Instructor();
 
 
     @Override
@@ -74,12 +77,20 @@ public class saleExistingUser extends BaseActivity {
         getPrice();
         getUsers();
 
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //doMySearch(query);
+        Intent i = getIntent();
+        intentInstructor = (Instructor) i.getSerializableExtra("Instructor2Sub");
+
+        mAuth1 = FirebaseAuth.getInstance();
+        FirebaseOptions firebaseOptions = new FirebaseOptions.Builder()
+                .setApiKey("AIzaSyBuXBwvwnaUQ0ZBKssZoAWpH9SUpWEpnC0")
+                .setApplicationId("fir-test-e9bb1").build();
+
+        try {
+            FirebaseApp myApp = FirebaseApp.initializeApp(getApplicationContext(), firebaseOptions, "AnyAppName");
+            mAuth2 = FirebaseAuth.getInstance(myApp);
+        } catch (IllegalStateException e) {
+            mAuth2 = FirebaseAuth.getInstance(FirebaseApp.getInstance("AnyAppName"));
         }
-        mAuth = FirebaseAuth.getInstance();
         signIn = (Button) findViewById(R.id.login);
         autoTextView = findViewById(R.id.autoTextView);
         usrPhone = (EditText) findViewById(R.id.usrPhone);
@@ -89,9 +100,8 @@ public class saleExistingUser extends BaseActivity {
 
 
         carouselPicker = (CarouselPicker) findViewById(R.id.carousel);
-        textAdapter= new CarouselPicker.CarouselViewAdapter(this, textItems, 0);
-        usersAdapter=  new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, usersTmp);
-
+        textAdapter = new CarouselPicker.CarouselViewAdapter(this, textItems, 0);
+        usersAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, usersTmp);
 
 
         carouselPicker.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -102,7 +112,7 @@ public class saleExistingUser extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
-                subCount =priceList.get(position).getCost();
+                subCount = priceList.get(position).getCost();
             }
 
             @Override
@@ -141,16 +151,15 @@ public class saleExistingUser extends BaseActivity {
                         && !TextUtils.isEmpty(usrPhone.getText())
                         && !TextUtils.isEmpty(usrEmail.getText())
                         && !TextUtils.isEmpty(usrPswd.getText())) {
-                    Toast.makeText(getApplicationContext(), " "+subCount,
+                    Toast.makeText(getApplicationContext(), " " + subCount,
                             Toast.LENGTH_SHORT).show();
                     //TODO user entity call for create new record
-                        User newUser=new User();
-                            newUser.setEmail(usrEmail.getText().toString());
-                            newUser.setName(autoTextView.getText().toString().substring(0,autoTextView.getText().toString().indexOf(" ")));
-                            newUser.setSurname(autoTextView.getText().toString().substring(autoTextView.getText().toString().indexOf(" ")+1));
-                            newUser.setMobile(usrPhone.getText().toString());
-                        createAccount(newUser,usrPswd.getText().toString());
-
+                    User newUser = new User();
+                    newUser.setEmail(usrEmail.getText().toString());
+                    newUser.setName(autoTextView.getText().toString().substring(0, autoTextView.getText().toString().indexOf(" ")));
+                    newUser.setSurname(autoTextView.getText().toString().substring(autoTextView.getText().toString().indexOf(" ") + 1));
+                    newUser.setMobile(usrPhone.getText().toString());
+                    createAccount(newUser, usrPswd.getText().toString());
 
 
                 }
@@ -158,26 +167,33 @@ public class saleExistingUser extends BaseActivity {
         });
 
     }
-    private void createAccount(User newUser, String password)  {
+
+    private void go2Main() {
+        Intent intent = new Intent(this, EmailPasswordActivity.class);
+        startActivity(intent);
+    }
+
+    private void createAccount(User newUser, String password) {
 
         showProgressDialog();
 
-        mAuth.createUserWithEmailAndPassword(newUser.getEmail(), password)
+        mAuth2.createUserWithEmailAndPassword(newUser.getEmail(), password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task)  {
+                    public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseUser user = mAuth2.getCurrentUser();
                             newUser.setUid(user.getUid());
                             createNewUser(newUser);
-
+                            mAuth2.signOut();
+                            go2Main();
                             /*нужно создать новый абонемент и пользователя
                             updateUI(user);*/
-                    }else {
+                        } else {
                             try {
                                 throw task.getException();
-                            }  catch(FirebaseAuthUserCollisionException e) {
+                            } catch (FirebaseAuthUserCollisionException e) {
                                 /*создаю только новый абонемент*/
 
                             } catch (Exception e) {
@@ -190,7 +206,7 @@ public class saleExistingUser extends BaseActivity {
                 });
     }
 
-    private void createNewUser(User newUser){
+    private void createNewUser(User newUser) {
         FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUser.getIdToken(true)
                 .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -206,8 +222,8 @@ public class saleExistingUser extends BaseActivity {
                                 public void onResponse(Call<Void> call, Response<Void> response) {
                                     hideProgressDialog();
 
-                                    Log.i(TAG, "User "+newUser.getUid()+" created");
-                                    Toast.makeText(getApplicationContext(),"User "+newUser.getUid()+" created" ,
+                                    Log.i(TAG, "User " + newUser.getUid() + " created");
+                                    Toast.makeText(getApplicationContext(), "User " + newUser.getUid() + " created",
                                             Toast.LENGTH_SHORT).show();
 
                                 }
@@ -219,18 +235,18 @@ public class saleExistingUser extends BaseActivity {
                                     } catch (ConnectException ex) {
                                         Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.errorconnection) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
                                                 Toast.LENGTH_SHORT).show();
                                     } catch (EOFException ex) {
                                         Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
                                                 Toast.LENGTH_SHORT).show();
                                     } catch (Throwable et) {
                                         Log.e(TAG, et.getMessage());
 
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
                                                 Toast.LENGTH_SHORT).show();
 
                                     }
@@ -243,6 +259,7 @@ public class saleExistingUser extends BaseActivity {
                     }
                 });
     }
+
     private void getPrice() {
 
         FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -258,12 +275,12 @@ public class saleExistingUser extends BaseActivity {
                             call.enqueue(new Callback<List<Price>>() {
                                 @Override
                                 public void onResponse(Call<List<Price>> call, Response<List<Price>> response) {
-                                priceList=response.body();
-                                for(Price price:priceList){
-                                    textItems.add(new CarouselPicker.TextItem(String.format("%d",price.getNumbers()), 20)); //I'm not proud of it
+                                    priceList = response.body();
+                                    for (Price price : priceList) {
+                                        textItems.add(new CarouselPicker.TextItem(String.format("%d", price.getNumbers()), 20)); //I'm not proud of it
 
-                                }
-                                    subCount=priceList.get(0).getCost();
+                                    }
+                                    subCount = priceList.get(0).getCost();
                                     carouselPicker.setAdapter(textAdapter);
                                     hideProgressDialog();
 
@@ -276,18 +293,18 @@ public class saleExistingUser extends BaseActivity {
                                     } catch (ConnectException ex) {
                                         Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.errorconnection) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
                                                 Toast.LENGTH_SHORT).show();
                                     } catch (EOFException ex) {
                                         Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
                                                 Toast.LENGTH_SHORT).show();
                                     } catch (Throwable et) {
                                         Log.e(TAG, et.getMessage());
 
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
                                                 Toast.LENGTH_SHORT).show();
 
                                     }
@@ -300,6 +317,7 @@ public class saleExistingUser extends BaseActivity {
                     }
                 });
     }
+
     private void getUsers() {
 
         FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -315,11 +333,11 @@ public class saleExistingUser extends BaseActivity {
                             call.enqueue(new Callback<List<User>>() {
                                 @Override
                                 public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                                    List<User> users=response.body();
-                                    for(User user:users){
-                                        usersAdapter.add(user.getName()+" "+user.getSurname());
+                                    List<User> users = response.body();
+                                    for (User user : users) {
+                                        usersAdapter.add(user.getName() + " " + user.getSurname());
                                     }
-                                   autoTextView.setAdapter(usersAdapter);
+                                    autoTextView.setAdapter(usersAdapter);
 
                                     hideProgressDialog();
 
@@ -332,18 +350,18 @@ public class saleExistingUser extends BaseActivity {
                                     } catch (ConnectException ex) {
                                         Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.errorconnection) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
                                                 Toast.LENGTH_SHORT).show();
                                     } catch (EOFException ex) {
                                         Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
                                                 Toast.LENGTH_SHORT).show();
                                     } catch (Throwable et) {
                                         Log.e(TAG, et.getMessage());
 
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
                                                 Toast.LENGTH_SHORT).show();
 
                                     }
