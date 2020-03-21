@@ -41,6 +41,7 @@ import com.subscription.android.client.print.PrinterActivity;
 import java.io.EOFException;
 import java.io.Serializable;
 import java.net.ConnectException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -58,7 +59,7 @@ public class SubscriptionActivity extends BaseActivity  {
     private static final String TAG = SubscriptionActivity.class.getName();;
 
     GridView gvMain;
-    ImageButton btnOk, btStartScan, imageSignOut, insertNew, nfcScan;
+    ImageButton btnOk, btStartScan, imageSignOut, insertNew, nfcScan, instrChart;
     TextView hellouser, instructorName, exCost;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Date currentTime = Calendar.getInstance().getTime();
@@ -90,7 +91,8 @@ public class SubscriptionActivity extends BaseActivity  {
         imageSignOut = findViewById(R.id.imageSignOut);
         btStartScan = findViewById(R.id.photoScan);
         insertNew = findViewById(R.id.createnewsub);
-        nfcScan = findViewById(R.id.nfcscan);
+        //nfcScan = findViewById(R.id.nfcscan);
+        instrChart=findViewById(R.id.instructorsVisits);
 
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
             @Override
@@ -100,13 +102,18 @@ public class SubscriptionActivity extends BaseActivity  {
         };
         btnOk.setOnClickListener(oclBtnOk);
 
-        nfcScan.setOnClickListener(new View.OnClickListener() {
+        /*nfcScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 go2NFC();
             }
+        });*/
+        instrChart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                go2Chart();
+            }
         });
-
         insertNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,6 +147,12 @@ public class SubscriptionActivity extends BaseActivity  {
     }
     private void go2Print() {
         Intent intent = new Intent(this, PrinterActivity.class);
+        intent.putExtra("Instructor2Sub", intentInstructor);
+
+        startActivity(intent);
+    }
+    private void go2Chart() {
+        Intent intent = new Intent(this, InstructorChartActitivty.class);
         intent.putExtra("Instructor2Sub", intentInstructor);
 
         startActivity(intent);
@@ -299,10 +312,18 @@ public class SubscriptionActivity extends BaseActivity  {
                                         response.body().setVisitDates(dates);
                                         String[] visitedDates = new String[dates.size()];
 
-                                        exCost.setText(String.valueOf(response.body().getPrice()));
-                                        instructorName.setText(response.body().getInstrName() + " " + response.body().getInstrSurname());
+
+
+
+                                        exCost.setText("Стоимость: "+String.valueOf(response.body().getPrice()));
+                                        instructorName.setText("Ваш инструктор: "+response.body().getInstrName() + " " + response.body().getInstrSurname());
+
                                         for (int i = 0; i < dates.size(); i++) {
-                                            visitedDates[i] = dates.get(i).getDate().toString();
+                                            Date date = dates.get(i).getDate();
+                                            DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
+                                           // mTimeText.setText("Time: " + dateFormat.format(date));
+                                           visitedDates[i] = dateFormat.format(date).toString();
+                                           // visitedDates[i]="new new";
                                         }
 
                                         intentInstructor.setId(response.body().getInstructorId());

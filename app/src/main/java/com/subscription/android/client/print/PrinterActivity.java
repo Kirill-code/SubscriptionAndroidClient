@@ -170,7 +170,7 @@ public class PrinterActivity extends Activity implements Serializable {
            QRCodeWriter writer = new QRCodeWriter();
             try {
                 BitMatrix bitMatrix = writer.encode("syryauid" + uid, BarcodeFormat. QR_CODE, 300, 250);
-                int width = bitMatrix.getWidth();
+                int width = bitMatrix.getWidth();//TODO change matrix scale
                 int height = bitMatrix.getHeight();
                 Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                 for (int x = 0; x < width; x++) {

@@ -110,4 +110,7 @@
     <string name="adminview">Назначение администратора</string>
     <string name="timeout">Таймаут, попробуйте позже или свяжитесь с поддержкой</string>
     <string name="search_hint">user search</string>
+    <string name="instructorsVisits">Instructors Visits</string>
+    <string name="instrViewchart">Visits count</string>
+    <string name="visits4instructor">visits</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.subscription.android.client.model;
 
+import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -12,6 +13,8 @@ public class VisitDate {
 
     public VisitDate(long id, Date date) {
         this.id = id;
+/*maybe date format need
+**/
         this.date = date;
     }
 

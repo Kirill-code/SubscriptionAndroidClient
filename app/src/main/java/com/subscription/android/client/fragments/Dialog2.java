@@ -1,9 +1,11 @@
 package com.subscription.android.client.fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
 import android.service.notification.ConditionProviderService;
@@ -18,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.Api;
 import com.subscription.android.client.R;
+import com.subscription.android.client.print.PrinterActivity;
 import com.subscription.android.client.view.AdminActivity;
 import com.subscription.android.client.view.SubscriptionActivity;
 
@@ -36,7 +39,15 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
 
     final String LOG_TAG = "adminDialog";
     String uid, admin;
-    boolean flagResponse;
+    Context context;
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
+
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         admin = getArguments().getString("admin");
         uid = getArguments().getString("uid");
@@ -47,6 +58,10 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
                 .setNeutralButton(R.string.cancel, this)
                 .setMessage("Вы уверены, что хотите назначить права "+admin+" ?");
         return adb.create();
+    }
+    private void goBack() {
+        Intent intent = new Intent(context, AdminActivity.class);
+        startActivity(intent);
     }
  public  void assignAdmins(String uid) {
 
@@ -68,10 +83,12 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
                             call.enqueue(new Callback<Void>() {
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
-                                    ;
+
                                     response.body();
                                     Log.d("AssignAdmin", "Admin rights assigned "+uid);
-                                    flagResponse=true;
+                                    Toast.makeText(context, "Права назначены успешно", Toast.LENGTH_SHORT).show();
+
+
                                     //
                        }
 
@@ -92,10 +109,50 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
 
 
     }
-    public void notifyUser(){
-        if(flagResponse){
-        Toast.makeText(getActivity(), "Права назначены успешно", Toast.LENGTH_SHORT).show();}
-        else Toast.makeText(getActivity(), "Права назначены с ошибкой", Toast.LENGTH_SHORT).show();
+    public  void removeAdmins(String uid) {
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Api api = retrofit.create(Api.class);
+
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mUser.getIdToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+                            String idToken = task.getResult().getToken();
+                            Call<Void> call = api.removeAdmin(idToken, uid);
+
+                            call.enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+
+                                    response.body();
+                                    Log.d("AssignAdmin", "Admin rights deleted "+uid);
+                                    Toast.makeText(context, "Права удалены успешно", Toast.LENGTH_SHORT).show();
+
+                                    //
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+
+                                    System.out.println(t.getMessage());
+                                    t.printStackTrace();
+
+                                }
+                            });
+
+                        } else {
+                            System.out.println(task.getException());
+                        }
+                    }
+                });
+
+
     }
 
     public void onClick(DialogInterface dialog, int which) {
@@ -106,7 +163,7 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
                 i = R.string.yes;
                 try{
                   assignAdmins(uid);
-                    notifyUser();
+
                 }
                 catch (Exception ex){
                     ex.printStackTrace();
@@ -116,8 +173,15 @@ public  class Dialog2 extends DialogFragment implements DialogInterface.OnClickL
             }
             case Dialog.BUTTON_NEGATIVE:
                 i = R.string.no;
+                try{
+                    removeAdmins(uid);
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
                 break;
             case Dialog.BUTTON_NEUTRAL:
+
+
                 break;
         }
         if (i > 0)

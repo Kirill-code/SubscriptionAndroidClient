@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    >
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FF6D00">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/instrViewchart" />
+    </android.support.v7.widget.Toolbar>
+
+    <ListView
+        android:id="@+id/listViewAdmins"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#41FFD600"
+        android:divider="@android:drawable/divider_horizontal_textfield"
+        android:visibility="visible">
+
+    </ListView>
+
+</LinearLayout>

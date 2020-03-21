@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import com.subscription.android.client.R;
+import com.subscription.android.client.model.UserAdmins;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -99,19 +100,24 @@ public class AdminActivity extends BaseActivity {
                             String idToken = task.getResult().getToken();
                             showProgressDialog();
                             // Send token to your backend via HTTPS
-                            Call<List<User>> call = api.getAdminEmails(idToken);
+                            Call<List<UserAdmins>> call = api.getAdminEmails(idToken);
 
-                            call.enqueue(new Callback<List<User>>() {
+                            call.enqueue(new Callback<List<UserAdmins>>() {
                                 @Override
-                                public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                                public void onResponse(Call<List<UserAdmins>> call, Response<List<UserAdmins>> response) {
                                     hideProgressDialog();
-                                    List<User> userList = response.body();
+                                    List<UserAdmins> userList = response.body();
 
                                     String[] users = new String[userList.size()];
+
                                     uids = new String[userList.size()];
                                     //looping through all the heroes and inserting the names inside the string array
                                     for (int i = 0; i < userList.size(); i++) {
+                                    if(Boolean.TRUE.equals(userList.get(i).getClaim())){
+                                        users[i] = userList.get(i).getEmail()+"   "+getResources().getString(R.string.true_tick);
+                                    }else {
                                         users[i] = userList.get(i).getEmail();
+                                    }
                                         uids[i] = userList.get(i).getUid();
                                     }
                                     //displaying the string array into listview
@@ -121,7 +127,7 @@ public class AdminActivity extends BaseActivity {
                                 }
 
                                 @Override
-                                public void onFailure(Call<List<User>> call, Throwable t) {
+                                public void onFailure(Call<List<UserAdmins>> call, Throwable t) {
                                     try {
                                         throw t;
                                     } catch (ConnectException ex) {

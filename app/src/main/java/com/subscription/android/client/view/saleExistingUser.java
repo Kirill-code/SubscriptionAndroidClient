@@ -186,10 +186,12 @@ public class saleExistingUser extends BaseActivity {
                             FirebaseUser user = mAuth2.getCurrentUser();
                             newUser.setUid(user.getUid());
                             createNewUser(newUser);
-                            mAuth2.signOut();
-                            go2Main();
+                            //call PrinterActivit printPhoto
                             /*нужно создать новый абонемент и пользователя
                             updateUI(user);*/
+
+                            mAuth2.signOut();
+                            go2Main();
                         } else {
                             try {
                                 throw task.getException();

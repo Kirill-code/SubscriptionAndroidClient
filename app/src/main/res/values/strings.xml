@@ -78,8 +78,8 @@
     <string name="cancel">Cancel</string>
     <string name="maybe">Maybe</string>
     <string name="instructorName" />
-    <string name="excount" />
-    <string name="subscCost" />
+    <string name="excount" translatable="false" />
+    <string name="subscCost" translatable="false" />
     <string name="qrCode">qr</string>
     <string name="greetings">Hello</string>
     <string name="networkissue">Network issue, please retry</string>
@@ -88,7 +88,7 @@
     <string name="emptylessons">You have not attended any classes yet</string>
     <string name="errorconnection">Internet connetctions problem. Please retry.</string>
     <string name="qrscanerror">Wrong QR code</string>
-    <string name="photoScan" />
+    <string name="photoScan" translatable="false" />
     <string name="formerror">Required.</string>
     <string name="verificationmsg" >"Verification email sent to "</string>
     <string name="verificationerror" >Failed to send verification email.</string>
@@ -113,4 +113,8 @@
     <string name="adminview">Admin assignment</string>
     <string name="timeout">Timeout, please retry or contact helpdesk</string>
     <string name="search_hint">user search</string>
-</resources>
+    <string name="instructorsVisits">Instructors Visits</string>
+    <string name="instrViewchart">Visits count</string>
+    <string name="visits4instructor">visits</string>
+    <string name="true_tick" translatable="false">\u2713</string>
+    </resources>
