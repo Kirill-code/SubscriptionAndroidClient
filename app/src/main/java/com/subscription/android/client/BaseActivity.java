@@ -2,12 +2,10 @@ package com.subscription.android.client;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.support.annotation.VisibleForTesting;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
-import com.subscription.android.client.R;
 
 public class BaseActivity extends AppCompatActivity {
 

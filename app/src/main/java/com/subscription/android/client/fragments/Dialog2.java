@@ -1,15 +1,13 @@
 package com.subscription.android.client.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
-import android.service.notification.ConditionProviderService;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,11 +18,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.Api;
 import com.subscription.android.client.R;
-import com.subscription.android.client.print.PrinterActivity;
 import com.subscription.android.client.view.AdminActivity;
-import com.subscription.android.client.view.SubscriptionActivity;
-
-import java.util.logging.Handler;
 
 import retrofit2.Call;
 import retrofit2.Callback;

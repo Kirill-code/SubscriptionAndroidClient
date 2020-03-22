@@ -7,7 +7,7 @@
     android:gravity="center"
     >
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#D50000">
@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/adminview" />
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <ListView
         android:id="@+id/listViewAdmins"
@@ -28,5 +28,6 @@
         android:visibility="visible">
 
     </ListView>
+
 
 </LinearLayout>

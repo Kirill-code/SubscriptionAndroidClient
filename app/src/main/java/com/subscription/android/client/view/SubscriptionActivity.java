@@ -1,16 +1,14 @@
 package com.subscription.android.client.view;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,7 +28,6 @@ import com.google.zxing.integration.android.IntentResult;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.subscription.android.client.Api;
 import com.subscription.android.client.BaseActivity;
-import com.subscription.android.client.BuildConfig;
 import com.subscription.android.client.NFC.NFC;
 import com.subscription.android.client.R;
 import com.subscription.android.client.model.Instructor;
@@ -39,16 +36,12 @@ import com.subscription.android.client.model.VisitDate;
 import com.subscription.android.client.print.PrinterActivity;
 
 import java.io.EOFException;
-import java.io.Serializable;
 import java.net.ConnectException;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -121,7 +114,10 @@ public class SubscriptionActivity extends BaseActivity  {
             }
         });
         hellouser.setText(getResources().getString(R.string.greetings) + " " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
-        getSubscriptions();
+
+        ////////////////////////////
+            getSubscriptions();
+        ///////////////////////////
         qrGenerator(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
         imageSignOut.setOnClickListener(new View.OnClickListener() {

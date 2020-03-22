@@ -1,19 +1,11 @@
 package com.subscription.android.client.view;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -29,9 +21,7 @@ import com.subscription.android.client.Api;
 
 import com.subscription.android.client.BaseActivity;
 import com.subscription.android.client.fragments.Dialog2;
-import com.subscription.android.client.model.User;
 
-import java.io.EOFException;
 import java.net.ConnectException;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
