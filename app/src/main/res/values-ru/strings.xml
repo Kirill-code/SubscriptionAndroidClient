@@ -113,4 +113,9 @@
     <string name="instructorsVisits">Instructors Visits</string>
     <string name="instrViewchart">Visits count</string>
     <string name="visits4instructor">visits</string>
+    <string name="personaccount">person account</string>
+    <string name="title">Title</string>
+    <string name="secondary_text">Secondary text</string>
+    <string name="supporting_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="shr_product_title">Title</string>
 </resources>
