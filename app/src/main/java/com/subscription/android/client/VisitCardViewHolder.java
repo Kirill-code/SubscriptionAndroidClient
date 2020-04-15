@@ -9,14 +9,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class VisitCardViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView productTitle;
-    public TextView productPrice;
+    public TextView dayOfWeek;
+    public TextView date;
     public LinearLayout linearLayout;
+
 
 
     public VisitCardViewHolder(@NonNull View itemView) {
         super(itemView);
-        productTitle = itemView.findViewById(R.id.card_title);
+        dayOfWeek = itemView.findViewById(R.id.card_title);
         linearLayout=itemView.findViewById(R.id.visitor_stamps);
+        date=itemView.findViewById(R.id.card_date);
     }
 }

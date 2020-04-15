@@ -118,4 +118,6 @@
     <string name="secondary_text">Secondary text</string>
     <string name="supporting_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
     <string name="shr_product_title">Title</string>
+    <string name="shr_search_title">search</string>
+    <string name="shr_filter_title">filter</string>
 </resources>

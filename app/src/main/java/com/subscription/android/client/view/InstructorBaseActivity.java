@@ -2,6 +2,7 @@ package com.subscription.android.client.view;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
@@ -36,9 +37,10 @@ public class InstructorBaseActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instructor_base);
 
-       NestedScrollView nsv = findViewById(R.id.nsv);
+
         FloatingActionButton fab=findViewById(R.id.fab);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        NestedScrollView nestedScrollView=findViewById(R.id.nsv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false));
         VisitCardRecyclerViewAdapter adapter = new VisitCardRecyclerViewAdapter(
@@ -48,8 +50,11 @@ public class InstructorBaseActivity extends BaseActivity {
         int smallPadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small);
         recyclerView.addItemDecoration(new VisitGridItemDecoration(largePadding, smallPadding));
 
-
-
+        //int scrollTo = ((View) childView.getParent().getParent()).getTop() + childView.getTop();
+        recyclerView.post(() -> {
+            float y = recyclerView.getY() + recyclerView.getChildAt(5).getY();
+            nestedScrollView.smoothScrollTo(0,  (int) y);
+        });
 
         //adminBtn=findViewById(R.id.app_bar_person);
 
@@ -96,11 +101,11 @@ public class InstructorBaseActivity extends BaseActivity {
     }
 
    */
-/* @Override
+@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.bottomappbar_menu,menu);
         return true;
-    }*//*
+    }/*
 
     private void go2Print() {
         Intent intent = new Intent(this, PrinterActivity.class);

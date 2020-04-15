@@ -8,34 +8,44 @@
     app:cardPreventCornerOverlap="true">
 
     <LinearLayout
+        android:id="@+id/card_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
         <!-- Title, secondary and supporting text -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Понедельник"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            android:textSize="32sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/card_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shr_product_title"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textSize="32sp" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/card_title"
+            android:id="@+id/card_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
-            android:text="@string/shr_product_title"
             android:textAppearance="?attr/textAppearanceBody2"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <LinearLayout
             android:id="@+id/visitor_stamps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginTop="5dp"
+            >
         </LinearLayout>
 
 
