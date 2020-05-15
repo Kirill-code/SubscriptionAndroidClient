@@ -183,7 +183,7 @@ public class saleExistingUser extends BaseActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth2.getCurrentUser();
                             newUser.setUid(user.getUid());
-                            createNewUser(newUser);
+                            createNewUser(newUser); //create new user in REST db
                             //call PrinterActivit printPhoto
                             /*нужно создать новый абонемент и пользователя
                             updateUI(user);*/

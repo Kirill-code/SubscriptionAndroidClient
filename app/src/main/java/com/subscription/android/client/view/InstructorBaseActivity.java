@@ -1,10 +1,13 @@
 package com.subscription.android.client.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -13,48 +16,66 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+import com.subscription.android.client.Api;
 import com.subscription.android.client.BaseActivity;
 import com.subscription.android.client.VisitCardRecyclerViewAdapter;
-import com.subscription.android.client.VisitEntry;
 import com.subscription.android.client.VisitGridItemDecoration;
 import com.subscription.android.client.R;
+
+import com.subscription.android.client.model.DTO.VisitsDTO;
 import com.subscription.android.client.model.Instructor;
+import com.subscription.android.client.print.PrinterActivity;
+
+import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class InstructorBaseActivity extends BaseActivity {
 
     private static final String TAG = InstructorBaseActivity.class.getName();
 
+    RecyclerView recyclerView;
     BottomAppBar bottomAppBar;
     TextView adminBtn;
     Instructor intentInstructor=new Instructor();
 
+    List monthsList;
+
 
     protected void onCreate(Bundle savedInstanceState) {
 
-
-
+/*
+* ВСТАВЬ СЮДА ЗАПРОС К АПИ И СОХРАНЕНИЕ В ДЖСОН!!!
+* Я НЕ МОГУ
+* */
         Log.i(TAG, "Activity started");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instructor_base);
+        showProgressDialog();
 
+        getVisitsInPeriod(1,"2020-04-01","2020-04-30");
 
         FloatingActionButton fab=findViewById(R.id.fab);
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
         NestedScrollView nestedScrollView=findViewById(R.id.nsv);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false));
-        VisitCardRecyclerViewAdapter adapter = new VisitCardRecyclerViewAdapter(
-                VisitEntry.initProductEntryList(getResources()));
-        recyclerView.setAdapter(adapter);
+
+
         int largePadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing);
         int smallPadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small);
         recyclerView.addItemDecoration(new VisitGridItemDecoration(largePadding, smallPadding));
 
         //int scrollTo = ((View) childView.getParent().getParent()).getTop() + childView.getTop();
-        recyclerView.post(() -> {
-            float y = recyclerView.getY() + recyclerView.getChildAt(5).getY();
-            nestedScrollView.smoothScrollTo(0,  (int) y);
-        });
+
 
         //adminBtn=findViewById(R.id.app_bar_person);
 
@@ -82,7 +103,88 @@ public class InstructorBaseActivity extends BaseActivity {
 
 
     }
-/*
+
+
+
+    private void getVisitsInPeriod(long instid,String dateStart, String dateEnd) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Api api = retrofit.create(Api.class);
+
+        Call<List<List>> call = api.getMonthVisits(instid,dateStart,dateEnd);
+
+        call.enqueue(new Callback<List<List>>() {
+            @Override
+            public void onResponse(Call<List<List>> call, Response<List<List>> response) {
+                hideProgressDialog();
+                //CAST PROBLEMS
+                List<List> responseVisits = response.body();
+                List<VisitsDTO> tempList=new ArrayList<>();
+                for (int i=0;i<response.body().size();i++) {
+                    VisitsDTO temp=new VisitsDTO();
+                    temp.setDate(response.body().get(i).get(0).toString());
+                    temp.setInstr_id((double) response.body().get(i).get(1));
+                    temp.setVisits_count((double) response.body().get(i).get(2));
+                    tempList.add(temp);
+                }
+
+                VisitCardRecyclerViewAdapter adapter = new VisitCardRecyclerViewAdapter(tempList);
+                recyclerView.setAdapter(adapter);
+
+                /*recyclerView.post(() -> {
+                    float y = recyclerView.getY() + recyclerView.getChildAt(2).getY();
+                    nestedScrollView.smoothScrollTo(0,  (int) y);
+                });*/
+            }
+
+            @Override
+            public void onFailure(Call<List<List>> call, Throwable t) {
+                try {
+                    throw t;
+                } catch (ConnectException ex) {
+                    Log.e(TAG, ex.getMessage());
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(),getResources().getString(R.string.errorconnection) ,
+                            Toast.LENGTH_SHORT).show();
+                } catch (TimeoutException ex) {
+                    Log.e(TAG, ex.getMessage());
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(),getResources().getString(R.string.timeout) ,
+                            Toast.LENGTH_SHORT).show();
+                } catch (Throwable et) {
+                    Log.e(TAG, et.getMessage());
+
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                            Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+        //Start token verification
+        /*FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mUser.getIdToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+
+                            String idToken = task.getResult().getToken();
+                            showProgressDialog();
+                            // Send token to your backend via HTTPS
+
+                        } else {
+                            System.out.println( task.getException());
+                        }
+                    }
+                });
+*/
+
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -100,12 +202,12 @@ public class InstructorBaseActivity extends BaseActivity {
         return true;
     }
 
-   */
+
 @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.bottomappbar_menu,menu);
         return true;
-    }/*
+    }
 
     private void go2Print() {
         Intent intent = new Intent(this, PrinterActivity.class);
@@ -143,7 +245,7 @@ public class InstructorBaseActivity extends BaseActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
-*/
+
 
 
 

@@ -1,6 +1,7 @@
 package com.subscription.android.client;
 
 
+import com.subscription.android.client.model.DTO.VisitsDTO;
 import com.subscription.android.client.model.Price;
 import com.subscription.android.client.model.Subscription;
 import com.subscription.android.client.model.User;
@@ -21,8 +22,9 @@ import retrofit2.http.Path;
 
 public interface Api {
     //TODO propertie file
+  //TODO create API parent class
  //String BASE_URL = "http://185.35.67.65:8080/subscription-server/";
-  String BASE_URL = "http://192.168.31.27:8080/";
+  String BASE_URL = "http://192.168.31.94:8080/";
     @GET("admins")
     Call<List<UserAdmins>> getAdminEmails(@Header("token") String token);
     @GET("generalusers")
@@ -35,6 +37,8 @@ public interface Api {
     Call<Subscription> getSubscriptionByUid(/*@Header("token") String token,*/ @Path("uid") String uid );
     @GET("instructorgrouped")
     Call<List> getInstructorsVisits(/*@Header("token") String token,*/ );
+  @GET("visitsbydate")
+  Call<List<List>> getMonthVisits(@Header("instid") long instid, @Header("dateStart") String dateStart, @Header("dateEnd") String dateEnd);
 
     @POST("adminclaim")
     Call<Void> registerAdmin(@Header("token") String token,@Header("uid") String uid);
@@ -45,7 +49,7 @@ public interface Api {
     @POST("createnewuser")
     Call<Void> newUser(@Body User user);
 
-  @DELETE("removeadminclaim")
+    @DELETE("removeadminclaim")
   Call<Void> removeAdmin(@Header("token") String token,@Header("uid") String uid);
 
 }
