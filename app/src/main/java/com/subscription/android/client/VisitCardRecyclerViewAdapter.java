@@ -63,27 +63,28 @@ public class VisitCardRecyclerViewAdapter extends RecyclerView.Adapter<VisitCard
 
             holder.dayOfWeek.setText(textDay);
             holder.date.setText(visitsList.get(position).getDate());
-/*
+            holder.numberOfVisits.setText(Double.toString(visitsList.get(position).getVisits_count()).substring(0,1));
+/* Used for Image grid of visits
             int count=17;
             int k=0;
-            for (int i=0;i<=count/5;i++){*/
+            for (int i=0;i<=count/5;i++){
                 LinearLayout layout2 = new LinearLayout(holder.linearLayout.getContext());
                 layout2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 layout2.setOrientation(LinearLayout.HORIZONTAL);
-                /*ImageView imageView = new ImageView(layout2.getContext());
+                ImageView imageView = new ImageView(layout2.getContext());
                 imageView.setImageResource(R.drawable.user);
                 imageView.setAdjustViewBounds(true);
                 imageView.setMaxWidth(85);
                 imageView.setMaxHeight(85);
 
-                layout2.addView(imageView);*/
-               /* for(int j=0;j<10;j++) {
+                layout2.addView(imageView);
+                for(int j=0;j<10;j++) {
                     if(k==count) break;
 
                     k++;
-                }*/
+                }
                 holder.linearLayout.addView(layout2);
-  //          }
+            }*/
 
         }
     }

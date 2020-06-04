@@ -9,11 +9,13 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -23,6 +25,7 @@ import com.subscription.android.client.VisitCardRecyclerViewAdapter;
 import com.subscription.android.client.VisitGridItemDecoration;
 import com.subscription.android.client.R;
 
+import com.subscription.android.client.fragments.BottomSheetNavigationFragment;
 import com.subscription.android.client.model.DTO.VisitsDTO;
 import com.subscription.android.client.model.Instructor;
 import com.subscription.android.client.print.PrinterActivity;
@@ -52,10 +55,6 @@ public class InstructorBaseActivity extends BaseActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
 
-/*
-* ВСТАВЬ СЮДА ЗАПРОС К АПИ И СОХРАНЕНИЕ В ДЖСОН!!!
-* Я НЕ МОГУ
-* */
         Log.i(TAG, "Activity started");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instructor_base);
@@ -79,16 +78,42 @@ public class InstructorBaseActivity extends BaseActivity {
 
         //adminBtn=findViewById(R.id.app_bar_person);
 
-       /* View.OnClickListener oclBtnOk = new View.OnClickListener() {
+        View.OnClickListener oclBtnOk = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 go2AdminPage();
             }
-        };*/
-//        adminBtn.setOnClickListener(oclBtnOk);
+        };
+// Bars
+        Toolbar myToolbar =  findViewById(R.id.app_bar);
+        setSupportActionBar(myToolbar);
+        bottomAppBar=findViewById(R.id.bottom_app_bar);
+        bottomAppBar.replaceMenu(R.menu.bottomappbar_menu);
+        bottomAppBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        //bottomAppBar=findViewById(R.id.bar);
-      setSupportActionBar(bottomAppBar);
+                //open bottom sheet
+                BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetNavigationFragment.newInstance();
+                bottomSheetDialogFragment.show(getSupportFragmentManager(), "Bottom Sheet Dialog Fragment");
+            }
+        });
+
+        bottomAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.app_bar_add:
+                        intentInstructor.setId(1);
+                        intentInstructor.setName("TEST");
+                        intentInstructor.setSurname("Rename it");
+                        go2Print();
+                        break;
+                }
+                return false;
+            }
+        });
+
 
         FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.fab);
         myFab.setOnClickListener(new View.OnClickListener() {
@@ -126,14 +151,14 @@ public class InstructorBaseActivity extends BaseActivity {
                 for (int i=0;i<response.body().size();i++) {
                     VisitsDTO temp=new VisitsDTO();
                     temp.setDate(response.body().get(i).get(0).toString());
-                    temp.setInstr_id((double) response.body().get(i).get(1));
-                    temp.setVisits_count((double) response.body().get(i).get(2));
+                    temp.setVisits_count((double) response.body().get(i).get(1));
+                    temp.setInstr_id((double) response.body().get(i).get(2));
                     tempList.add(temp);
                 }
 
                 VisitCardRecyclerViewAdapter adapter = new VisitCardRecyclerViewAdapter(tempList);
                 recyclerView.setAdapter(adapter);
-
+//add scroll to position here
                 /*recyclerView.post(() -> {
                     float y = recyclerView.getY() + recyclerView.getChildAt(2).getY();
                     nestedScrollView.smoothScrollTo(0,  (int) y);
@@ -186,26 +211,21 @@ public class InstructorBaseActivity extends BaseActivity {
     }
 
 
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.app_bar_add:
-                intentInstructor.setId(1);
-                intentInstructor.setName("TEST");
-                intentInstructor.setSurname("Rename it");
-                go2Print();
-                break;
-            case R.id.app_bar_person:
-                Toast.makeText(this, "Clicked Person", Toast.LENGTH_SHORT).show();
-                break;
-        }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.uptoolbar_menu,menu);
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
 
-@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.bottomappbar_menu,menu);
+            case R.id.search:
+                Toast.makeText(this, "Clicked Person", Toast.LENGTH_SHORT).show();
+                break;
+        }
         return true;
     }
 

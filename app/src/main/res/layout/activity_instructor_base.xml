@@ -5,18 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff">
+
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
-            android:background="@color/colorPrimary"
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Абонемент"
-            />
+            android:background="@color/colorPrimary"
+            app:title="Посещения"
+            app:titleTextColor="#ffffff" />
     </com.google.android.material.appbar.AppBarLayout>
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsv"
@@ -40,6 +41,8 @@
             android:layout_gravity="bottom"
             app:backgroundTint="@color/colorPrimary"
             app:fabAlignmentMode="center"
+            app:navigationIcon="@drawable/botom_menu"
+            android:theme="@style/Widget.MaterialComponents.BottomAppBar"
              />
 
 
@@ -48,7 +51,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/qr_code"
-            app:layout_anchor="@id/bottom_app_bar" />
+            app:layout_anchor="@id/bottom_app_bar"
+            />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -24,7 +24,7 @@ public interface Api {
     //TODO propertie file
   //TODO create API parent class
  //String BASE_URL = "http://185.35.67.65:8080/subscription-server/";
-  String BASE_URL = "http://192.168.31.94:8080/";
+  String BASE_URL = "http://192.168.8.103:8080/";
     @GET("admins")
     Call<List<UserAdmins>> getAdminEmails(@Header("token") String token);
     @GET("generalusers")
