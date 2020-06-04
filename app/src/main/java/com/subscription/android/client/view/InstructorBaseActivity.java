@@ -1,6 +1,7 @@
 package com.subscription.android.client.view;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -26,13 +28,21 @@ import com.subscription.android.client.VisitGridItemDecoration;
 import com.subscription.android.client.R;
 
 import com.subscription.android.client.fragments.BottomSheetNavigationFragment;
+import com.subscription.android.client.fragments.DateRangePickerFragment;
 import com.subscription.android.client.model.DTO.VisitsDTO;
 import com.subscription.android.client.model.Instructor;
 import com.subscription.android.client.print.PrinterActivity;
 
 import java.net.ConnectException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
 import retrofit2.Call;
@@ -41,7 +51,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class InstructorBaseActivity extends BaseActivity {
+public class InstructorBaseActivity extends BaseActivity implements DateRangePickerFragment.OnDateRangeSelectedListener {
 
     private static final String TAG = InstructorBaseActivity.class.getName();
 
@@ -53,6 +63,7 @@ public class InstructorBaseActivity extends BaseActivity {
     List monthsList;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     protected void onCreate(Bundle savedInstanceState) {
 
         Log.i(TAG, "Activity started");
@@ -60,18 +71,17 @@ public class InstructorBaseActivity extends BaseActivity {
         setContentView(R.layout.activity_instructor_base);
         showProgressDialog();
 
-        getVisitsInPeriod(1,"2020-04-01","2020-04-30");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+        Date MonthFirstDay = calendar.getTime();
+        calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date MonthLastDay = calendar.getTime();
+
+
+        getVisitsInPeriod(1,sdf.format(MonthFirstDay).toString(),sdf.format(MonthLastDay).toString());
 
         FloatingActionButton fab=findViewById(R.id.fab);
-        recyclerView = findViewById(R.id.recycler_view);
-        NestedScrollView nestedScrollView=findViewById(R.id.nsv);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false));
-
-
-        int largePadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing);
-        int smallPadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small);
-        recyclerView.addItemDecoration(new VisitGridItemDecoration(largePadding, smallPadding));
 
         //int scrollTo = ((View) childView.getParent().getParent()).getTop() + childView.getTop();
 
@@ -132,6 +142,8 @@ public class InstructorBaseActivity extends BaseActivity {
 
 
     private void getVisitsInPeriod(long instid,String dateStart, String dateEnd) {
+        recyclerView=null;
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -157,6 +169,16 @@ public class InstructorBaseActivity extends BaseActivity {
                 }
 
                 VisitCardRecyclerViewAdapter adapter = new VisitCardRecyclerViewAdapter(tempList);
+                recyclerView = findViewById(R.id.recycler_view);
+                NestedScrollView nestedScrollView=findViewById(R.id.nsv);
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 1, GridLayoutManager.VERTICAL, false));
+
+
+                int largePadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing);
+                int smallPadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small);
+                recyclerView.addItemDecoration(new VisitGridItemDecoration(largePadding, smallPadding));
+
                 recyclerView.setAdapter(adapter);
 //add scroll to position here
                 /*recyclerView.post(() -> {
@@ -225,9 +247,16 @@ public class InstructorBaseActivity extends BaseActivity {
             case R.id.search:
                 Toast.makeText(this, "Clicked Person", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.filter:
+                DateRangePickerFragment dateRangePickerFragment= DateRangePickerFragment.newInstance(InstructorBaseActivity.this,false);
+                dateRangePickerFragment.show(getSupportFragmentManager(),"datePicker");
+
+                break;
+
         }
         return true;
     }
+
 
     private void go2Print() {
         Intent intent = new Intent(this, PrinterActivity.class);
@@ -267,7 +296,22 @@ public class InstructorBaseActivity extends BaseActivity {
     }
 
 
+    @Override
+    public void onDateRangeSelected(int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(startYear,startMonth,startDay );
+        Date startDate = calendar.getTime();
 
 
+        calendar.set(endYear,endMonth,endDay );
+        Date endDate = calendar.getTime();
 
+        getVisitsInPeriod(1,sdf.format(startDate),sdf.format(endDate));
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
 }

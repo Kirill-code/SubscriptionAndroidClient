@@ -2,6 +2,7 @@ package com.subscription.android.client.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.subscription.android.client.R;
+import com.subscription.android.client.view.AdminActivity;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -22,6 +24,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
 
 
+    private void go2AdminPage() {
+        Intent intent = new Intent(getActivity(), AdminActivity.class);
+        startActivity(intent);
+    }
     public static BottomSheetNavigationFragment newInstance() {
 
         Bundle args = new Bundle();
@@ -71,6 +77,10 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav01:
+                        //ACTION
+                        break;
+                    case R.id.nav02:
+                        go2AdminPage();
                         break;
                 }
                 return false;
