@@ -18,45 +18,7 @@
             android:layout_height="match_parent"
             android:layout_weight="12"></TextView>
 
-        <ImageButton
-            android:id="@+id/createnewsub"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/create_account"
-            app:srcCompat="@android:drawable/ic_input_add" />
 
-        <ImageButton
-            android:id="@+id/button2admin"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/assignAdmin"
-            app:srcCompat="@drawable/assign" />
-
-        <ImageButton
-            android:id="@+id/photoScan"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/photoScan"
-            app:srcCompat="@drawable/qr_code" />
-        <ImageButton
-            android:id="@+id/instructorsVisits"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/instructorsVisits"
-            app:srcCompat="@drawable/small_chart" />
-
-        <!--    <ImageButton
-                android:id="@+id/nfcscan"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:contentDescription="@string/photoScan"
-                app:srcCompat="@drawable/nfc_logo" />
-    -->
         <ImageButton
             android:id="@+id/imageSignOut"
             android:layout_width="wrap_content"

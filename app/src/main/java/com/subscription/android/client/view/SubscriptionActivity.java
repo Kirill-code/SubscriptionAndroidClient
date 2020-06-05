@@ -52,7 +52,7 @@ public class SubscriptionActivity extends BaseActivity  {
     private static final String TAG = SubscriptionActivity.class.getName();;
 
     GridView gvMain;
-    ImageButton btnOk, btStartScan, imageSignOut, insertNew, nfcScan, instrChart;
+    ImageButton btnOk, btStartScan, imageSignOut;
     TextView hellouser, instructorName, exCost;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Date currentTime = Calendar.getInstance().getTime();
@@ -75,17 +75,12 @@ public class SubscriptionActivity extends BaseActivity  {
         Log.i(TAG, "Activity started");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid_subscription);
-
+//DELETE ALL UNUSED STUFF
         gvMain = (GridView) findViewById(R.id.gvMain);
         hellouser = (TextView) findViewById(R.id.userName);
         instructorName = (TextView) findViewById(R.id.instructorName);
         exCost = (TextView) findViewById(R.id.cost);
-        btnOk = findViewById(R.id.button2admin);
-        imageSignOut = findViewById(R.id.imageSignOut);
-        btStartScan = findViewById(R.id.photoScan);
-        insertNew = findViewById(R.id.createnewsub);
-        //nfcScan = findViewById(R.id.nfcscan);
-        instrChart=findViewById(R.id.instructorsVisits);
+
 
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
             @Override
@@ -101,7 +96,7 @@ public class SubscriptionActivity extends BaseActivity  {
                 go2NFC();
             }
         });*/
-        instrChart.setOnClickListener(new View.OnClickListener() {
+       /* instrChart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 go2Chart();
@@ -112,7 +107,7 @@ public class SubscriptionActivity extends BaseActivity  {
             public void onClick(View view) {
                go2Print();
             }
-        });
+        });*/
         hellouser.setText(getResources().getString(R.string.greetings) + " " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
         ////////////////////////////
@@ -298,7 +293,7 @@ public class SubscriptionActivity extends BaseActivity  {
                                 public void onResponse(Call<Subscription> call, Response<Subscription> response) {
                                     if (response.body() == null) {
                                         hideProgressDialog();
-                                        String[] visitedDates = {getResources().getString(R.string.helpdesk)};
+                                        String[] visitedDates = {getResources().getString(R.string.novisits)};
                                         gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
                                         Log.e(TAG, "Empty response");
                                     } else {

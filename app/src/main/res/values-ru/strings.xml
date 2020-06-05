@@ -120,4 +120,5 @@
     <string name="shr_product_title">Title</string>
     <string name="shr_search_title">search</string>
     <string name="shr_filter_title">filter</string>
+    <string name="novisits">You have no visits.</string>
 </resources>

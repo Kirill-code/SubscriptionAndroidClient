@@ -64,7 +64,7 @@
             android:background="#447e7e7e" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/signout_bottom_sheet"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignTop="@+id/user_name"

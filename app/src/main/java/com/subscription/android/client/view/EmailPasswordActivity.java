@@ -34,6 +34,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.BaseActivity;
 import com.subscription.android.client.R;
+import com.subscription.android.client.model.Subscription;
+
+import retrofit2.Call;
 
 
 public class EmailPasswordActivity extends BaseActivity implements
@@ -151,10 +154,10 @@ public class EmailPasswordActivity extends BaseActivity implements
         user.getIdToken(false).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
             @Override
             public void onSuccess(GetTokenResult result) {
-                boolean isAdmin = (boolean) result.getClaims().get("instructor");
-                if (isAdmin) {
+                Object instructor = result.getClaims().get("instructor");
+                if (instructor != null && instructor instanceof Boolean) {
                     go2Instructor();
-                } else {
+                }else{
                     go2Client();
                 }
             }

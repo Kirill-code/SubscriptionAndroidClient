@@ -11,8 +11,10 @@ import android.widget.ImageView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.subscription.android.client.R;
 import com.subscription.android.client.view.AdminActivity;
+import com.subscription.android.client.view.EmailPasswordActivity;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -26,6 +28,10 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
 
     private void go2AdminPage() {
         Intent intent = new Intent(getActivity(), AdminActivity.class);
+        startActivity(intent);
+    }
+    private void go2Main() {
+        Intent intent = new Intent(getActivity(), EmailPasswordActivity.class);
         startActivity(intent);
     }
     public static BottomSheetNavigationFragment newInstance() {
@@ -59,7 +65,7 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
         }
     };
 
-    private ImageView closeButton;
+    private ImageView closeButton, signout;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -94,6 +100,16 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
                 dismiss();
             }
         });
+        signout = contentView.findViewById(R.id.signout_bottom_sheet);
+        signout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                mAuth.signOut();
+                go2Main();
+            }
+        });
+
 
         //Set the coordinator layout behavior
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) ((View) contentView.getParent()).getLayoutParams();
