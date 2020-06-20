@@ -119,7 +119,7 @@ public class NFC extends BaseActivity {
 
                             showProgressDialog();
 
-                            Call<Subscription> call = api.getSubscriptionByUid(/*idToken,*/uid);
+                            Call<Subscription> call = api.getSubscriptionByUid(idToken,uid);
                             call.enqueue(new Callback<Subscription>() {
                                 @Override
                                 public void onResponse(Call<Subscription> call, Response<Subscription> response) {

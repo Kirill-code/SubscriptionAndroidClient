@@ -61,14 +61,7 @@ public class InstructorChartActitivty extends BaseActivity {
 
     private void getAdmins() {
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Api.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        Api api = retrofit.create(Api.class);
-
-        Call<List> call = api.getInstructorsVisits();
+        Call<List> call = api.getInstructorsVisits(idToken);
 
         call.enqueue(new Callback<List>() {
             @Override

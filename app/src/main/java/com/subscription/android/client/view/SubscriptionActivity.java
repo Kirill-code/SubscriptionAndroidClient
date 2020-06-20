@@ -80,6 +80,7 @@ public class SubscriptionActivity extends BaseActivity  {
         hellouser = (TextView) findViewById(R.id.userName);
         instructorName = (TextView) findViewById(R.id.instructorName);
         exCost = (TextView) findViewById(R.id.cost);
+        imageSignOut=findViewById(R.id.imageSignOut);
 
 
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
@@ -88,7 +89,7 @@ public class SubscriptionActivity extends BaseActivity  {
                 go2Client();
             }
         };
-        btnOk.setOnClickListener(oclBtnOk);
+//        btnOk.setOnClickListener(oclBtnOk);
 
         /*nfcScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +116,7 @@ public class SubscriptionActivity extends BaseActivity  {
         ///////////////////////////
         qrGenerator(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
+
         imageSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,6 +126,7 @@ public class SubscriptionActivity extends BaseActivity  {
             }
         });
 
+/*
 
         btStartScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +137,7 @@ public class SubscriptionActivity extends BaseActivity  {
                 integrator.setBeepEnabled(false);
                 integrator.initiateScan();
             }
-        });
+        });*/
     }
     private void go2Print() {
         Intent intent = new Intent(this, PrinterActivity.class);
@@ -223,7 +226,7 @@ public class SubscriptionActivity extends BaseActivity  {
 
                             showProgressDialog();
 
-                            Call<Subscription> call = api.getSubscriptionByUid(/*idToken,*/uid);
+                            Call<Subscription> call = api.getSubscriptionByUid(idToken,uid);
                             call.enqueue(new Callback<Subscription>() {
                                 @Override
                                 public void onResponse(Call<Subscription> call, Response<Subscription> response) {
@@ -287,7 +290,7 @@ public class SubscriptionActivity extends BaseActivity  {
 
                             showProgressDialog();
 
-                            Call<Subscription> call = api.getSubscriptionByUid(/*idToken,*/FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            Call<Subscription> call = api.getSubscriptionByUid(idToken,FirebaseAuth.getInstance().getCurrentUser().getUid());
                             call.enqueue(new Callback<Subscription>() {
                                 @Override
                                 public void onResponse(Call<Subscription> call, Response<Subscription> response) {

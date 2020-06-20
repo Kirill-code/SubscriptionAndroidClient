@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A product entry in the list of products.
+ * A visit entry in the list of visits.
+ * Should be implemented
  */
 public class VisitEntry {
     private static final String TAG = VisitEntry.class.getSimpleName();

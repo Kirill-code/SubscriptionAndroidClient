@@ -125,4 +125,11 @@
     <string name="shr_search_title">search</string>
     <string name="shr_filter_title">filter</string>
     <string name="novisits">You have no visits.</string>
+    <string name="registfail">Ошибка регистрации</string>
+    <string name="samedate">Смените дату.</string>
+    <string name="username">Имя пользователя</string>
+    <string name="useremail">user@email.ru</string>
+    <string name="admin_success">Права назначены успешно</string>
+    <string name="admin_success_delete">Права удалены успешно</string>
+    <string name="usersurname">Фамилия</string>
 </resources>

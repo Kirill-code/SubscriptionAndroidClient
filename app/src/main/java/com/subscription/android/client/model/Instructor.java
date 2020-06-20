@@ -11,7 +11,7 @@ public class Instructor implements Serializable {
 
 
     private long id;
-    private String name, surname;
+    private String name, surname, uid;
     private List<Subscription> instructorSubscriptions= new ArrayList<>();
 
     public List<Subscription> getInstructorSubscriptions() {
@@ -46,5 +46,11 @@ public class Instructor implements Serializable {
         this.surname = surname;
     }
 
+    public String getUid() {
+        return uid;
+    }
 
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 }

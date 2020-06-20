@@ -7,14 +7,18 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 import com.subscription.android.client.R;
 import com.subscription.android.client.view.AdminActivity;
 import com.subscription.android.client.view.EmailPasswordActivity;
+import com.subscription.android.client.view.InstructorChartActitivty;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -25,15 +29,20 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
  */
 public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
 
-
     private void go2AdminPage() {
         Intent intent = new Intent(getActivity(), AdminActivity.class);
         startActivity(intent);
     }
+
     private void go2Main() {
         Intent intent = new Intent(getActivity(), EmailPasswordActivity.class);
         startActivity(intent);
     }
+    private void go2Chart() {
+        Intent intent = new Intent(getActivity(), InstructorChartActitivty.class);
+        startActivity(intent);
+    }
+
     public static BottomSheetNavigationFragment newInstance() {
 
         Bundle args = new Bundle();
@@ -65,6 +74,8 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
         }
     };
 
+    FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+
     private ImageView closeButton, signout;
 
     @SuppressLint("RestrictedApi")
@@ -76,6 +87,17 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
         dialog.setContentView(contentView);
 
         NavigationView navigationView = contentView.findViewById(R.id.navigation_view);
+        TextView userName = contentView.findViewById(R.id.bottom_user_name);
+        if (!mUser.getDisplayName().equals("")) {
+            userName.setText(mUser.getDisplayName());
+        }
+        TextView userEmail = contentView.findViewById(R.id.bottom_user_email);
+        userEmail.setText(mUser.getEmail());
+        ImageView userImage = contentView.findViewById(R.id.profile_image);
+        if (mUser.getPhotoUrl() != null) {
+            Picasso.with(getContext()).load(mUser.getPhotoUrl()).into(userImage);
+        }
+
 
         //implement navigation menu item click event
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -83,7 +105,7 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav01:
-                        //ACTION
+                        go2Chart();
                         break;
                     case R.id.nav02:
                         go2AdminPage();

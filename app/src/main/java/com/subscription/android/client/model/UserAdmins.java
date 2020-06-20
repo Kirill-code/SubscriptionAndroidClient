@@ -1,7 +1,7 @@
 package com.subscription.android.client.model;
 
 public class UserAdmins {
-    String uid, email;
+    String uid, email, displayedName;
     Boolean claim;
 
     public String getUid() {
@@ -26,5 +26,13 @@ public class UserAdmins {
 
     public void setClaim(Boolean claim) {
         this.claim = claim;
+    }
+
+    public String getDisplayedName() {
+        return displayedName;
+    }
+
+    public void setDisplayedName(String displayedName) {
+        this.displayedName = displayedName;
     }
 }

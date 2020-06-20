@@ -17,33 +17,44 @@
             android:layout_height="48dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="16dp"
-            app:srcCompat="@drawable/profile_img" />
+            app:srcCompat="@drawable/person_stab" />
 
         <TextView
-            android:id="@+id/user_name"
-            android:layout_width="250dp"
+            android:id="@+id/bottom_user_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:layout_marginTop="16dp"
             android:layout_toLeftOf="@+id/close_image_view"
             android:layout_toRightOf="@+id/profile_image"
-            android:text="Кирилл Бесфамильный"
+            android:text="@string/username"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/user_email"
-            android:layout_width="250dp"
+            android:id="@+id/bottom_user_email"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/user_name"
+            android:layout_below="@+id/bottom_user_name"
             android:layout_marginLeft="12dp"
             android:layout_marginTop="2dp"
             android:layout_toLeftOf="@+id/close_image_view"
             android:layout_toRightOf="@+id/profile_image"
-            android:text="kirill@email.test"
+            android:text="@string/useremail"
             android:textColor="@android:color/black" />
 
+        <ImageView
+            android:id="@+id/signout_bottom_sheet"
+            android:layout_width="24dp"
+            android:layout_height="48dp"
+            android:layout_alignEnd="@+id/divider_one"
+            android:layout_alignRight="@+id/divider_one"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="30dp"
+            app:srcCompat="@drawable/logout_black" />
 
         <ImageView
             android:id="@+id/close_image_view"
@@ -53,29 +64,17 @@
             android:layout_centerVertical="true"
             android:padding="16dp"
             android:visibility="gone"
-            app:srcCompat="@drawable/chart" />
+             />
 
         <View
             android:id="@+id/divider_one"
             android:layout_width="match_parent"
             android:layout_height="2dip"
-            android:layout_below="@+id/user_email"
+            android:layout_below="@+id/bottom_user_email"
             android:layout_marginTop="15dp"
             android:background="#447e7e7e" />
-
-        <ImageView
-            android:id="@+id/signout_bottom_sheet"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignTop="@+id/user_name"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
-            android:layout_toEndOf="@+id/user_name"
-            android:layout_toRightOf="@+id/user_name"
-            app:srcCompat="@drawable/logout_black" />
-
     </RelativeLayout>
+
     <!-- navigation view -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"

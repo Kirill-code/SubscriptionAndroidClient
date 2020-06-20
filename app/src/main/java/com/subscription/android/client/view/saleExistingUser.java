@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
-import com.subscription.android.client.Api;
 import com.subscription.android.client.BaseActivity;
 import com.subscription.android.client.R;
 import com.subscription.android.client.model.Instructor;
@@ -38,25 +37,19 @@ import in.goodiebag.carouselpicker.CarouselPicker;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Kirill_code on 06.02.2019.
  */
 public class saleExistingUser extends BaseActivity {
     private static final String TAG = saleExistingUser.class.getName();
-    ;
+
 
     Button signIn;
     EditText userName, userSurname, usrPhone, usrEmail, usrPswd;
     long subCount;
     List<Price> priceList;
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(Api.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-    Api api = retrofit.create(Api.class);
+
     CarouselPicker carouselPicker;
     List<CarouselPicker.PickerItem> textItems = new ArrayList<>();
     List<String> usersTmp = new ArrayList<>();
@@ -183,7 +176,7 @@ public class saleExistingUser extends BaseActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth2.getCurrentUser();
                             newUser.setUid(user.getUid());
-                            createNewUser(newUser); //create new user in REST db
+                            createNewDBUser(newUser); //create new user in REST db
                             //call PrinterActivit printPhoto
                             /*нужно создать новый абонемент и пользователя
                             updateUI(user);*/
@@ -206,59 +199,7 @@ public class saleExistingUser extends BaseActivity {
                 });
     }
 
-    private void createNewUser(User newUser) {
-        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-        mUser.getIdToken(true)
-                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
-                            String idToken = task.getResult().getToken();
 
-                            showProgressDialog();
-
-                            Call<Void> call = api.newUser(newUser);
-                            call.enqueue(new Callback<Void>() {
-                                @Override
-                                public void onResponse(Call<Void> call, Response<Void> response) {
-                                    hideProgressDialog();
-
-                                    Log.i(TAG, "User " + newUser.getUid() + " created");
-                                    Toast.makeText(getApplicationContext(), "User " + newUser.getUid() + " created",
-                                            Toast.LENGTH_SHORT).show();
-
-                                }
-
-                                @Override
-                                public void onFailure(Call<Void> call, Throwable t) {
-                                    try {
-                                        throw t;
-                                    } catch (ConnectException ex) {
-                                        Log.e(TAG, ex.getMessage());
-                                        hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
-                                                Toast.LENGTH_SHORT).show();
-                                    } catch (EOFException ex) {
-                                        Log.e(TAG, ex.getMessage());
-                                        hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
-                                                Toast.LENGTH_SHORT).show();
-                                    } catch (Throwable et) {
-                                        Log.e(TAG, et.getMessage());
-
-                                        hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
-                                                Toast.LENGTH_SHORT).show();
-
-                                    }
-                                }
-                            });
-
-                        } else {
-                            Log.e("CallbackException", task.getException().toString());
-                        }
-                    }
-                });
-    }
 
     private void getPrice() {
 

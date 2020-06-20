@@ -7,18 +7,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.subscription.android.client.Api;
@@ -31,8 +38,10 @@ import com.subscription.android.client.fragments.BottomSheetNavigationFragment;
 import com.subscription.android.client.fragments.DateRangePickerFragment;
 import com.subscription.android.client.model.DTO.VisitsDTO;
 import com.subscription.android.client.model.Instructor;
+import com.subscription.android.client.model.Subscription;
 import com.subscription.android.client.print.PrinterActivity;
 
+import java.io.EOFException;
 import java.net.ConnectException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,8 +69,6 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
     TextView adminBtn;
     Instructor intentInstructor=new Instructor();
 
-    List monthsList;
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,18 +78,21 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
         setContentView(R.layout.activity_instructor_base);
         showProgressDialog();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
-        Date MonthFirstDay = calendar.getTime();
-        calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        Date MonthLastDay = calendar.getTime();
-
-
-        getVisitsInPeriod(1,sdf.format(MonthFirstDay).toString(),sdf.format(MonthLastDay).toString());
+//Разобраться с состоянием ответов
+        getInstructor(mUser.getUid());
 
         FloatingActionButton fab=findViewById(R.id.fab);
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                IntentIntegrator integrator = new IntentIntegrator(InstructorBaseActivity.this);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+                integrator.setCameraId(0);
+                integrator.setBeepEnabled(false);
+                integrator.initiateScan();
+            }
+        });
+        //add position of current date or nearest
         //int scrollTo = ((View) childView.getParent().getParent()).getTop() + childView.getTop();
 
 
@@ -114,9 +124,6 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.app_bar_add:
-                        intentInstructor.setId(1);
-                        intentInstructor.setName("TEST");
-                        intentInstructor.setSurname("Rename it");
                         go2Print();
                         break;
                 }
@@ -124,32 +131,77 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
             }
         });
 
+    }
 
-        FloatingActionButton myFab = (FloatingActionButton) findViewById(R.id.fab);
-        myFab.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                IntentIntegrator integrator = new IntentIntegrator(InstructorBaseActivity.this);
-                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-                integrator.setCameraId(0);
-                integrator.setBeepEnabled(false);
-                integrator.initiateScan();
-            }
-        });
 
+    private void getCurrentMonth() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+        Date MonthFirstDay = calendar.getTime();
+        calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date MonthLastDay = calendar.getTime();
+
+        getVisitsInPeriod(intentInstructor.getId(),sdf.format(MonthFirstDay),sdf.format(MonthLastDay));
 
     }
 
+    public void getInstructor(String uid ) {
+       // Instructor responseObj = new Instructor();
+        mUser.getIdToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+                            String idToken = task.getResult().getToken();
+
+                            Call<Instructor> call = api.getInstructorByUid(idToken, uid);
+                            call.enqueue(new Callback<Instructor>() {
+                                @Override
+                                public void onResponse(Call<Instructor> call, Response<Instructor> response) {
+                                    intentInstructor.setId(response.body().getId());
+                                    intentInstructor.setName(response.body().getName());
+                                    intentInstructor.setSurname(response.body().getSurname());
+                                    //change to callbacks
+                                    getCurrentMonth(/*Instructor instructor*/);
+                                }
+
+                                @Override
+                                public void onFailure(Call<Instructor> call, Throwable t) {
+                                    try {
+                                        throw t;
+                                    } catch (ConnectException ex) {
+                                        Log.e(TAG, ex.getMessage());
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
+                                                Toast.LENGTH_SHORT).show();
+                                    } catch (EOFException ex) {
+                                        Log.e(TAG, ex.getMessage());
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
+                                                Toast.LENGTH_SHORT).show();
+                                    } catch (Throwable et) {
+                                        Log.e(TAG, et.getMessage());
+
+                                        hideProgressDialog();
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
+                                                Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }
+                            });
+
+                        } else {
+                            Log.e("CallbackException", task.getException().toString());
+                        }
+                    }
+                });
+    }
 
 
     private void getVisitsInPeriod(long instid,String dateStart, String dateEnd) {
         recyclerView=null;
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Api.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        Api api = retrofit.create(Api.class);
 
         Call<List<List>> call = api.getMonthVisits(instid,dateStart,dateEnd);
 
@@ -269,6 +321,72 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
         Intent intent = new Intent(this, AdminActivity.class);
         startActivity(intent);
     }
+    private void updateSubscription(String uid) {
+
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+        mUser.getIdToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        if (task.isSuccessful()) {
+                            String idToken = task.getResult().getToken();
+
+                            showProgressDialog();
+
+                            Call<Subscription> call = api.getSubscriptionByUid(idToken,uid);
+                            call.enqueue(new Callback<Subscription>() {
+                                @Override
+                                public void onResponse(Call<Subscription> call, Response<Subscription> response) {
+
+                                    Call<Void> call2save = api.savevisit(response.body().getAssociatedUserId());
+
+                                    call2save.enqueue(new Callback<Void>() {
+                                        @Override
+                                        public void onResponse(Call<Void> call2save, Response<Void> response) {
+                                            hideProgressDialog();
+                                            Toast.makeText(getApplicationContext(), getResources().getText(R.string.scanSucsessful), Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Void> call2save, Throwable t) {
+                                            Log.e(TAG, t.getMessage());
+                                            hideProgressDialog();
+                                            Toast.makeText(getApplicationContext(), getResources().getText(R.string.repeatlater), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(Call<Subscription> call, Throwable t) {
+                                    try {
+                                        throw t;
+                                    } catch (ConnectException ex) {
+                                        hideProgressDialog();
+                                        Log.e(TAG, ex.getMessage());
+                                        String[] visitedDates = {getResources().getString(R.string.errorconnection)};
+                                     //   gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
+                                    } catch (EOFException ex) {
+                                        Log.e(TAG, ex.getMessage());
+                                        hideProgressDialog();
+                                        String[] visitedDates = {getResources().getString(R.string.emptylessons)};
+                                       // gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
+                                    } catch (Throwable et) {
+                                        Log.e(TAG, et.getMessage());
+                                        hideProgressDialog();
+                                        String[] visitedDates = {getResources().getString(R.string.helpdesk)};
+//                                        gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
+
+                                    }
+                                }
+                            });
+
+                        } else {
+                            Log.e(TAG, task.getException().toString());
+                        }
+                    }
+                });
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -281,7 +399,10 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
                 if (result.getContents().substring(0, 8).equals("syryauid")) {
                     Log.i(TAG, "Scanned:" + result.getContents());
                     Toast.makeText(this, "Scan", Toast.LENGTH_SHORT).show();
+                    updateSubscription(result.getContents().substring(8));
                 } else {
+                    Toast.makeText(this, "Scan", Toast.LENGTH_SHORT).show();
+
                     Log.e(TAG, result.getContents());
                     Toast.makeText(getApplicationContext(), getResources().getText(R.string.qrscanerror),
                             Toast.LENGTH_SHORT).show();
@@ -298,7 +419,10 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
 
     @Override
     public void onDateRangeSelected(int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if(startDay==endDay){
+            Toast.makeText(getApplicationContext(),getResources().getString(R.string.samedate) ,
+                    Toast.LENGTH_SHORT).show();
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.set(startYear,startMonth,startDay );
         Date startDate = calendar.getTime();

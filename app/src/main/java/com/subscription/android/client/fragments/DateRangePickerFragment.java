@@ -18,7 +18,7 @@ import com.subscription.android.client.R;
 /**
  * A DialogFragment that show 2 date pickers.
  * Yesid Lazaro @ingyesid
- *
+ *edited by @kirill_code
  */
 public class DateRangePickerFragment extends DialogFragment implements View.OnClickListener{
 

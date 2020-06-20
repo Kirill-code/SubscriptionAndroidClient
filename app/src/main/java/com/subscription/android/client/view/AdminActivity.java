@@ -2,8 +2,7 @@ package com.subscription.android.client.view;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,11 +15,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
-import com.subscription.android.client.Api;
 
 
 import com.subscription.android.client.BaseActivity;
-import com.subscription.android.client.fragments.Dialog2;
+import com.subscription.android.client.fragments.AdminRightsFragmentDialog;
 
 import java.net.ConnectException;
 import java.util.List;
@@ -32,14 +30,12 @@ import com.subscription.android.client.model.UserAdmins;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AdminActivity extends BaseActivity {
     ListView listView;
 
     public static String msgAdmin;
-    static String[] uids;
+    static String[] uids, dispalyedName;
 
     private static final String TAG = AdminActivity.class.getName();;
 
@@ -54,11 +50,13 @@ public class AdminActivity extends BaseActivity {
                                     int position, long id) {
                 msgAdmin = listView.getItemAtPosition(position).toString();
 
+                //Maybe best option is change to some object
                 Bundle args = new Bundle();
                 args.putString("admin", msgAdmin);
                 args.putString("uid", uids[position]);
+                args.putString("dispalyedName", dispalyedName[position]);
 
-            Dialog2 dg=new Dialog2();
+            AdminRightsFragmentDialog dg=new AdminRightsFragmentDialog();
 
              dg.setArguments(args);
              dg.show(getFragmentManager(),"AdminDialog");
@@ -73,15 +71,7 @@ public class AdminActivity extends BaseActivity {
 
     private void getAdmins() {
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Api.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        Api api = retrofit.create(Api.class);
-
         //Start token verification
-        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
         mUser.getIdToken(true)
                 .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
@@ -101,14 +91,17 @@ public class AdminActivity extends BaseActivity {
                                     String[] users = new String[userList.size()];
 
                                     uids = new String[userList.size()];
+                                    dispalyedName = new String[userList.size()];
                                     //looping through all the heroes and inserting the names inside the string array
                                     for (int i = 0; i < userList.size(); i++) {
-                                    if(Boolean.TRUE.equals(userList.get(i).getClaim())){
-                                        users[i] = userList.get(i).getEmail()+"   "+getResources().getString(R.string.true_tick);
-                                    }else {
-                                        users[i] = userList.get(i).getEmail();
-                                    }
+
+                                        if(Boolean.TRUE.equals(userList.get(i).getClaim())){
+                                            users[i] = userList.get(i).getEmail()+"   "+getResources().getString(R.string.true_tick);
+                                        }else {
+                                            users[i] = userList.get(i).getEmail();
+                                        }
                                         uids[i] = userList.get(i).getUid();
+                                        dispalyedName[i]=userList.get(i).getDisplayedName();
                                     }
                                     //displaying the string array into listview
                                     listView.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, users));
