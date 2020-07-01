@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
-
+    >
+    <ImageView
+        android:layout_width="60dp" android:layout_height="60dp"
+        android:src="@mipmap/logo" android:scaleType="fitXY" />
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -16,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            app:title="Посещения"
+            app:title="@string/instructorsVisits"
             app:titleTextColor="#ffffff" />
     </com.google.android.material.appbar.AppBarLayout>
     <androidx.core.widget.NestedScrollView

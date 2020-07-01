@@ -127,9 +127,12 @@
     <string name="novisits">You have no visits.</string>
     <string name="registfail">Ошибка регистрации</string>
     <string name="samedate">Смените дату.</string>
-    <string name="username">Имя пользователя</string>
+    <string name="navigation_username_stab">Имя пользователя</string>
     <string name="useremail">user@email.ru</string>
     <string name="admin_success">Права назначены успешно</string>
     <string name="admin_success_delete">Права удалены успешно</string>
     <string name="usersurname">Фамилия</string>
+    <string name="visitor">Практикующий</string>
+    <string name="no_instructor">Инструтор не назначен</string>
+    <string name="description">Пометки</string>
 </resources>

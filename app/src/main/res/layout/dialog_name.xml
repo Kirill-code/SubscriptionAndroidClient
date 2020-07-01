@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:hint="@string/username"/>
+        android:hint="@string/navigation_username_stab"/>
 
     <EditText
         android:id="@+id/dialog_admin_surname"

@@ -3,9 +3,13 @@ package com.subscription.android.client.view;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+
 import androidx.annotation.NonNull;
+
 import android.os.Bundle;
+
 import androidx.appcompat.app.AlertDialog;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -48,26 +52,18 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SubscriptionActivity extends BaseActivity  {
-    private static final String TAG = SubscriptionActivity.class.getName();;
+public class SubscriptionActivity extends BaseActivity {
+    private static final String TAG = SubscriptionActivity.class.getName();
+    ;
 
     GridView gvMain;
     ImageButton btnOk, btStartScan, imageSignOut;
     TextView hellouser, instructorName, exCost;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Date currentTime = Calendar.getInstance().getTime();
-    int backButtonCount=0;
+    int backButtonCount = 0;
 
-    Instructor intentInstructor=new Instructor();
-
-
-
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(Api.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-
-    Api api = retrofit.create(Api.class);
+    Instructor intentInstructor = new Instructor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +76,7 @@ public class SubscriptionActivity extends BaseActivity  {
         hellouser = (TextView) findViewById(R.id.userName);
         instructorName = (TextView) findViewById(R.id.instructorName);
         exCost = (TextView) findViewById(R.id.cost);
-        imageSignOut=findViewById(R.id.imageSignOut);
+        imageSignOut = findViewById(R.id.imageSignOut);
 
 
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
@@ -109,10 +105,12 @@ public class SubscriptionActivity extends BaseActivity  {
                go2Print();
             }
         });*/
-        hellouser.setText(getResources().getString(R.string.greetings) + " " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
-
+        if (FirebaseAuth.getInstance().getCurrentUser().getDisplayName() != null) {
+            hellouser.setText(getResources().getString(R.string.greetings) + " " + FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+        } else
+            hellouser.setText(getResources().getString(R.string.greetings) + " " + getResources().getString(R.string.visitor));
         ////////////////////////////
-            getSubscriptions();
+        getSubscriptions();
         ///////////////////////////
         qrGenerator(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
@@ -139,38 +137,39 @@ public class SubscriptionActivity extends BaseActivity  {
             }
         });*/
     }
+
     private void go2Print() {
         Intent intent = new Intent(this, PrinterActivity.class);
         intent.putExtra("Instructor2Sub", intentInstructor);
 
         startActivity(intent);
     }
+
     private void go2Chart() {
         Intent intent = new Intent(this, InstructorChartActitivty.class);
         intent.putExtra("Instructor2Sub", intentInstructor);
 
         startActivity(intent);
     }
+
     private void go2Main() {
         Intent intent = new Intent(this, EmailPasswordActivity.class);
         startActivity(intent);
     }
+
     private void go2NFC() {
         Intent intent = new Intent(this, NFC.class);
         startActivity(intent);
     }
+
     @Override
-    public void onBackPressed()
-    {
-        if(backButtonCount >= 1)
-        {
+    public void onBackPressed() {
+        if (backButtonCount >= 1) {
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-        }
-        else
-        {
+        } else {
             Toast.makeText(this, getResources().getText(R.string.exit), Toast.LENGTH_SHORT).show();
             backButtonCount++;
         }
@@ -205,7 +204,6 @@ public class SubscriptionActivity extends BaseActivity  {
     }
 
 
-
     private void updateText(String scanCode) {
         exCost.setText(scanCode);
     }
@@ -226,7 +224,7 @@ public class SubscriptionActivity extends BaseActivity  {
 
                             showProgressDialog();
 
-                            Call<Subscription> call = api.getSubscriptionByUid(idToken,uid);
+                            Call<Subscription> call = api.getSubscriptionByUid(idToken, uid);
                             call.enqueue(new Callback<Subscription>() {
                                 @Override
                                 public void onResponse(Call<Subscription> call, Response<Subscription> response) {
@@ -281,7 +279,7 @@ public class SubscriptionActivity extends BaseActivity  {
     }
 
     private void getSubscriptions() {
-        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+
         mUser.getIdToken(true)
                 .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
@@ -290,13 +288,14 @@ public class SubscriptionActivity extends BaseActivity  {
 
                             showProgressDialog();
 
-                            Call<Subscription> call = api.getSubscriptionByUid(idToken,FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            Call<Subscription> call = api.getSubscriptionByUid(idToken, FirebaseAuth.getInstance().getCurrentUser().getUid());
                             call.enqueue(new Callback<Subscription>() {
                                 @Override
                                 public void onResponse(Call<Subscription> call, Response<Subscription> response) {
-                                    if (response.body() == null) {
+                                    if (response.body() == null || response.body().getPrice() == 0) {
                                         hideProgressDialog();
                                         String[] visitedDates = {getResources().getString(R.string.novisits)};
+                                        instructorName.setText(R.string.no_instructor);
                                         gvMain.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.list_black_text, R.id.list_content, visitedDates));
                                         Log.e(TAG, "Empty response");
                                     } else {
@@ -304,20 +303,15 @@ public class SubscriptionActivity extends BaseActivity  {
                                         List<VisitDate> dates = response.body().getVisitDates();
 
                                         response.body().setVisitDates(dates);
+
+                                        exCost.setText("Стоимость: " + String.valueOf(response.body().getPrice()));
+                                        instructorName.setText("Ваш инструктор: " + response.body().getInstrName() + " " + response.body().getInstrSurname());
+
                                         String[] visitedDates = new String[dates.size()];
-
-
-
-
-                                        exCost.setText("Стоимость: "+String.valueOf(response.body().getPrice()));
-                                        instructorName.setText("Ваш инструктор: "+response.body().getInstrName() + " " + response.body().getInstrSurname());
-
                                         for (int i = 0; i < dates.size(); i++) {
                                             Date date = dates.get(i).getDate();
                                             DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
-                                           // mTimeText.setText("Time: " + dateFormat.format(date));
-                                           visitedDates[i] = dateFormat.format(date).toString();
-                                           // visitedDates[i]="new new";
+                                            visitedDates[i] = dateFormat.format(date).toString();
                                         }
 
                                         intentInstructor.setId(response.body().getInstructorId());

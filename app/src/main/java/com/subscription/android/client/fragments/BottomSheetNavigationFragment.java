@@ -74,7 +74,7 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
         }
     };
 
-    FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+    FirebaseUser  mUser= FirebaseAuth.getInstance().getCurrentUser();
 
     private ImageView closeButton, signout;
 
@@ -82,13 +82,14 @@ public class BottomSheetNavigationFragment extends BottomSheetDialogFragment {
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
+
         //Get the content View
         View contentView = View.inflate(getContext(), R.layout.bottom_navigation_drawer, null);
         dialog.setContentView(contentView);
 
         NavigationView navigationView = contentView.findViewById(R.id.navigation_view);
         TextView userName = contentView.findViewById(R.id.bottom_user_name);
-        if (!mUser.getDisplayName().equals("")) {
+        if (mUser.getDisplayName()!=null && !mUser.getDisplayName().equals("")) {
             userName.setText(mUser.getDisplayName());
         }
         TextView userEmail = contentView.findViewById(R.id.bottom_user_email);

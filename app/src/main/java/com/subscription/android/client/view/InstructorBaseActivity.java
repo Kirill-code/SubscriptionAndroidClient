@@ -158,11 +158,13 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
                             call.enqueue(new Callback<Instructor>() {
                                 @Override
                                 public void onResponse(Call<Instructor> call, Response<Instructor> response) {
-                                    intentInstructor.setId(response.body().getId());
-                                    intentInstructor.setName(response.body().getName());
-                                    intentInstructor.setSurname(response.body().getSurname());
-                                    //change to callbacks
-                                    getCurrentMonth(/*Instructor instructor*/);
+                                    if(response!=null) {
+                                        intentInstructor.setId(response.body().getId());
+                                        intentInstructor.setName(response.body().getName());
+                                        intentInstructor.setSurname(response.body().getSurname());
+                                        //change to callbacks
+                                        getCurrentMonth(/*Instructor instructor*/);
+                                    }
                                 }
 
                                 @Override

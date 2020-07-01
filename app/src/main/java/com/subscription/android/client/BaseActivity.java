@@ -17,7 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
-import com.subscription.android.client.model.Instructor;
+import com.subscription.android.client.model.DTO.OutcomeSubscriptionDTO;
 import com.subscription.android.client.model.User;
 
 import java.io.EOFException;
@@ -41,7 +41,9 @@ public class BaseActivity extends AppCompatActivity {
 
     public Api api = retrofit.create(Api.class);
 
-    public  String idToken="";
+    public String idToken = "";
+    private long  createduser ;
+
 
     public SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -76,12 +78,13 @@ public class BaseActivity extends AppCompatActivity {
         super.onStop();
         hideProgressDialog();
     }
+
     public void getToken() {
         mUser.getIdToken(true)
                 .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
                         if (task.isSuccessful()) {
-                           idToken = task.getResult().getToken();
+                            idToken = task.getResult().getToken();
 
                         } else {
                             Log.e("CallbackException", task.getException().toString());
@@ -89,57 +92,88 @@ public class BaseActivity extends AppCompatActivity {
                     }
                 });
     }
-    public void createNewDBUser(User newUser) {
-        mUser.getIdToken(true)
-                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
-                            String idToken = task.getResult().getToken();
 
-                            showProgressDialog();
 
-                            Call<Void> call = api.newUser(newUser);
-                            call.enqueue(new Callback<Void>() {
-                                @Override
-                                public void onResponse(Call<Void> call, Response<Void> response) {
-                                    hideProgressDialog();
+    public long createNewDBUser(User newUser) {
 
-                                    Log.i(TAG, "User " + newUser.getUid() + " created");
-                                    Toast.makeText(getApplicationContext(), "User " + newUser.getUid() + " created",
-                                            Toast.LENGTH_SHORT).show();
+        Call<Void> call = api.newUser(newUser);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                hideProgressDialog();
 
-                                }
+                Log.i(TAG, "User " + newUser.getUid() + " created");
+                Toast.makeText(getApplicationContext(), "User " + newUser.getUid() + " created",
+                        Toast.LENGTH_SHORT).show();
+                createduser = newUser.getId();
 
-                                @Override
-                                public void onFailure(Call<Void> call, Throwable t) {
-                                    try {
-                                        throw t;
-                                    } catch (ConnectException ex) {
-                                        Log.e(TAG, ex.getMessage());
-                                        hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
-                                                Toast.LENGTH_SHORT).show();
-                                    } catch (EOFException ex) {
-                                        Log.e(TAG, ex.getMessage());
-                                        hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
-                                                Toast.LENGTH_SHORT).show();
-                                    } catch (Throwable et) {
-                                        Log.e(TAG, et.getMessage());
+            }
 
-                                        hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
-                                                Toast.LENGTH_SHORT).show();
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                try {
+                    throw t;
+                } catch (ConnectException ex) {
+                    Log.e(TAG, ex.getMessage());
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
+                            Toast.LENGTH_SHORT).show();
+                } catch (EOFException ex) {
+                    Log.e(TAG, ex.getMessage());
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
+                            Toast.LENGTH_SHORT).show();
+                } catch (Throwable et) {
+                    Log.e(TAG, et.getMessage());
 
-                                    }
-                                }
-                            });
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
+                            Toast.LENGTH_SHORT).show();
 
-                        } else {
-                            Log.e("CallbackException", task.getException().toString());
-                        }
-                    }
-                });
+                }
+            }
+        });
+        return createduser;
+    }
+    public void createNewDBSubscription(OutcomeSubscriptionDTO OutcomeSubscriptionDTO) {
+
+        Call<Void> call = api.savesubscription(idToken, OutcomeSubscriptionDTO);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+
+                hideProgressDialog();
+
+                Log.i(TAG, "Subscription created");
+                Toast.makeText(getApplicationContext(), "Subscription created",
+                        Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                try {
+                    throw t;
+                } catch (ConnectException ex) {
+                    Log.e(TAG, ex.getMessage());
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
+                            Toast.LENGTH_SHORT).show();
+                } catch (EOFException ex) {
+                    Log.e(TAG, ex.getMessage());
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
+                            Toast.LENGTH_SHORT).show();
+                } catch (Throwable et) {
+                    Log.e(TAG, et.getMessage());
+
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
+                            Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
     }
 
 }

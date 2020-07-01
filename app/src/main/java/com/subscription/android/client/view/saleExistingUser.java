@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.subscription.android.client.BaseActivity;
 import com.subscription.android.client.R;
+import com.subscription.android.client.model.DTO.OutcomeSubscriptionDTO;
 import com.subscription.android.client.model.Instructor;
 import com.subscription.android.client.model.Price;
 import com.subscription.android.client.model.User;
@@ -46,7 +47,7 @@ public class saleExistingUser extends BaseActivity {
 
 
     Button signIn;
-    EditText userName, userSurname, usrPhone, usrEmail, usrPswd;
+    EditText userName, userSurname, usrPhone, usrEmail, usrPswd,usrDesciption;
     long subCount;
     List<Price> priceList;
 
@@ -59,7 +60,7 @@ public class saleExistingUser extends BaseActivity {
     private FirebaseAuth mAuth1;
     private FirebaseAuth mAuth2;
     Instructor intentInstructor = new Instructor();
-
+    long newDBuser; //assosiated userId
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,11 +71,11 @@ public class saleExistingUser extends BaseActivity {
 
         Intent i = getIntent();
         intentInstructor = (Instructor) i.getSerializableExtra("Instructor2Sub");
-
-        mAuth1 = FirebaseAuth.getInstance();
+//TODO move it to properties
         FirebaseOptions firebaseOptions = new FirebaseOptions.Builder()
                 .setApiKey("AIzaSyBuXBwvwnaUQ0ZBKssZoAWpH9SUpWEpnC0")
                 .setApplicationId("fir-test-e9bb1").build();
+        mAuth1 = FirebaseAuth.getInstance();
 
         try {
             FirebaseApp myApp = FirebaseApp.initializeApp(getApplicationContext(), firebaseOptions, "AnyAppName");
@@ -87,7 +88,10 @@ public class saleExistingUser extends BaseActivity {
         usrPhone = (EditText) findViewById(R.id.usrPhone);
         usrEmail = (EditText) findViewById(R.id.usrEmail);
         usrPswd = (EditText) findViewById(R.id.usrPassword);
+        usrDesciption = (EditText) findViewById(R.id.usrDescription);
+
         autoTextView.setThreshold(1); //will start working from first character
+
 
 
         carouselPicker = (CarouselPicker) findViewById(R.id.carousel);
@@ -153,6 +157,18 @@ public class saleExistingUser extends BaseActivity {
                     createAccount(newUser, usrPswd.getText().toString());
 
 
+
+                    OutcomeSubscriptionDTO outcomeSubscriptionDTO =new OutcomeSubscriptionDTO();
+                    /*incomeSubscriptionDTO.setSaleDate(currentDate);
+                    incomeSubscriptionDTO.setFinishDate(finishDate);*/
+                    outcomeSubscriptionDTO.setId(0);
+                    outcomeSubscriptionDTO.setPrice(subCount);
+                    outcomeSubscriptionDTO.setInstructorId(intentInstructor.getId());
+                    outcomeSubscriptionDTO.setAssociatedUserId(newDBuser);
+                    outcomeSubscriptionDTO.setDescription("");
+
+                    createNewDBSubscription(outcomeSubscriptionDTO);
+
                 }
             }
         });
@@ -176,7 +192,7 @@ public class saleExistingUser extends BaseActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth2.getCurrentUser();
                             newUser.setUid(user.getUid());
-                            createNewDBUser(newUser); //create new user in REST db
+                            newDBuser= createNewDBUser(newUser); //create new user in REST db
                             //call PrinterActivit printPhoto
                             /*нужно создать новый абонемент и пользователя
                             updateUI(user);*/

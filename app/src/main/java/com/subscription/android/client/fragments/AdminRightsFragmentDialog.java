@@ -84,7 +84,7 @@ public class AdminRightsFragmentDialog extends DialogFragment implements DialogI
         if (displayedName == null) {
                 adb.setView(view);
         }
-        
+
         return adb.create();
     }
 

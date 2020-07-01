@@ -1,15 +1,14 @@
 package com.subscription.android.client;
 
 
-import com.subscription.android.client.model.DTO.VisitsDTO;
+import com.subscription.android.client.model.DTO.InstructorDTO;
 import com.subscription.android.client.model.Instructor;
 import com.subscription.android.client.model.Price;
 import com.subscription.android.client.model.Subscription;
+import com.subscription.android.client.model.DTO.OutcomeSubscriptionDTO;
 import com.subscription.android.client.model.User;
 import com.subscription.android.client.model.UserAdmins;
-import com.subscription.android.client.model.VisitDate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -46,14 +45,14 @@ public interface Api {
 
     @POST("adminclaim")
     Call<Void> registerAdmin(@Header("token") String token,@Header("uid") String uid);
-    @POST("savesubscriptions")
-    Call<Void> savesubscription(@Body Subscription subscription);
+    @POST("newsubscription")
+    Call<Void> savesubscription(@Header("token") String token,@Body OutcomeSubscriptionDTO subscription);
     @POST("savenewvisit")
     Call<Void> savevisit(@Body String uid);
     @POST("createnewuser")
     Call<Void> newUser(@Body User user);
     @POST("newinstructor")
-    Call<Void> assignInstructor(@Header("token") String token,@Body Instructor instructor);
+    Call<Void> assignInstructor(@Header("token") String token,@Body InstructorDTO instructor);
 
 
   @DELETE("removeadminclaim")

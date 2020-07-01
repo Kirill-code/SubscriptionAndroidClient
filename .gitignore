@@ -8,3 +8,5 @@
 /captures
 
 service_account.json
+/app/google-services.json
+/.idea/

@@ -77,7 +77,7 @@
     <string name="maybe">Возможно</string>
     <string name="signed_in">Вошел</string>
     <string name="status_link_found">Ссылка получена, введите адрес электронной почты, чтобы войти.</string>
-    <string name="instructorName" />
+    <string name="instructorName">Инструктор</string>
     <string name="qrCode">qr</string>
     <string name="greetings">Привет</string>
     <string name="networkissue">Проблемы сети, попробуйте позже</string>
@@ -123,9 +123,12 @@
     <string name="novisits">У вас нет еще ни одного посещения</string>
     <string name="registfail">Ошибка регистрации</string>
     <string name="samedate">Смените дату.</string>
-    <string name="username">Имя пользователя</string>
+    <string name="navigation_username_stab">Инструктор</string>
     <string name="useremail">user@email.ru</string>
     <string name="admin_success">Права назначены успешно</string>
     <string name="admin_success_delete">Права удалены успешно</string>
     <string name="usersurname">Фамилия</string>
+    <string name="visitor">Практикующий</string>
+    <string name="no_instructor">Инструтор не назначен</string>
+    <string name="description">Пометки</string>
 </resources>

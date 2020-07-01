@@ -1,7 +1,9 @@
 package com.subscription.android.client.view;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.View;
@@ -18,7 +20,7 @@ import com.google.firebase.auth.GetTokenResult;
 
 
 import com.subscription.android.client.BaseActivity;
-import com.subscription.android.client.fragments.AdminRightsFragmentDialog;
+import com.subscription.android.client.fragments.AdminDialogFragment;
 
 import java.net.ConnectException;
 import java.util.List;
@@ -37,7 +39,8 @@ public class AdminActivity extends BaseActivity {
     public static String msgAdmin;
     static String[] uids, dispalyedName;
 
-    private static final String TAG = AdminActivity.class.getName();;
+    private static final String TAG = AdminActivity.class.getName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +59,11 @@ public class AdminActivity extends BaseActivity {
                 args.putString("uid", uids[position]);
                 args.putString("dispalyedName", dispalyedName[position]);
 
-            AdminRightsFragmentDialog dg=new AdminRightsFragmentDialog();
+                FragmentManager manager = getSupportFragmentManager();
+                AdminDialogFragment dg = new AdminDialogFragment();
 
-             dg.setArguments(args);
-             dg.show(getFragmentManager(),"AdminDialog");
+                dg.setArguments(args);
+                dg.show(manager, "AdminDialog");
 
             }
         });
@@ -95,13 +99,13 @@ public class AdminActivity extends BaseActivity {
                                     //looping through all the heroes and inserting the names inside the string array
                                     for (int i = 0; i < userList.size(); i++) {
 
-                                        if(Boolean.TRUE.equals(userList.get(i).getClaim())){
-                                            users[i] = userList.get(i).getEmail()+"   "+getResources().getString(R.string.true_tick);
-                                        }else {
+                                        if (Boolean.TRUE.equals(userList.get(i).getClaim())) {
+                                            users[i] = userList.get(i).getEmail() + "   " + getResources().getString(R.string.true_tick);
+                                        } else {
                                             users[i] = userList.get(i).getEmail();
                                         }
                                         uids[i] = userList.get(i).getUid();
-                                        dispalyedName[i]=userList.get(i).getDisplayedName();
+                                        dispalyedName[i] = userList.get(i).getDisplayedName();
                                     }
                                     //displaying the string array into listview
                                     listView.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, users));
@@ -116,18 +120,18 @@ public class AdminActivity extends BaseActivity {
                                     } catch (ConnectException ex) {
                                         Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.errorconnection) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
                                                 Toast.LENGTH_SHORT).show();
                                     } catch (TimeoutException ex) {
                                         Log.e(TAG, ex.getMessage());
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.timeout) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.timeout),
                                                 Toast.LENGTH_SHORT).show();
                                     } catch (Throwable et) {
                                         Log.e(TAG, et.getMessage());
 
                                         hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(),getResources().getString(R.string.helpdesk) ,
+                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
                                                 Toast.LENGTH_SHORT).show();
 
                                     }
@@ -135,7 +139,7 @@ public class AdminActivity extends BaseActivity {
                             });
 
                         } else {
-                            System.out.println( task.getException());
+                            System.out.println(task.getException());
                         }
                     }
                 });

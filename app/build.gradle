@@ -6,7 +6,7 @@ android {
     flavorDimensions "minSdkVersion"
 
     defaultConfig {
-        applicationId "com.google.firebase.quickstart.auth"
+        applicationId "com.subscription.android.client.auth"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
@@ -62,7 +62,7 @@ dependencies {
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
 
     implementation 'com.google.zxing:core:3.2.1'
-    
+
     implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
 
     implementation 'com.github.GoodieBag:CarouselPicker:v1.1'

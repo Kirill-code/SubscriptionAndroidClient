@@ -27,7 +27,7 @@
             android:layout_marginTop="16dp"
             android:layout_toLeftOf="@+id/close_image_view"
             android:layout_toRightOf="@+id/profile_image"
-            android:text="@string/username"
+            android:text="@string/navigation_username_stab"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold" />
