@@ -23,7 +23,7 @@ import retrofit2.http.Path;
 public interface Api {
 
  //String BASE_URL = "http://185.35.67.65:8080/subscription-server/";
-  String BASE_URL = "http://192.168.8.101:8080/";
+  String BASE_URL = "http://89.36.214.190:8080/subscription/";
 
   //change token validation!!
     @GET("admins")
@@ -46,7 +46,7 @@ public interface Api {
     @POST("adminclaim")
     Call<Void> registerAdmin(@Header("token") String token,@Header("uid") String uid);
     @POST("newsubscription")
-    Call<Void> savesubscription(@Header("token") String token,@Body OutcomeSubscriptionDTO subscription);
+    Call<Void> savesubscription(/*@Header("token") String token,*/@Body OutcomeSubscriptionDTO subscription);
     @POST("savenewvisit")
     Call<Void> savevisit(@Body String uid);
     @POST("createnewuser")

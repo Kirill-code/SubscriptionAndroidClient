@@ -48,7 +48,7 @@ public class saleExistingUser extends BaseActivity {
 
     Button signIn;
     EditText userName, userSurname, usrPhone, usrEmail, usrPswd,usrDesciption;
-    long subCount;
+    long subCount, priceId;
     List<Price> priceList;
 
     CarouselPicker carouselPicker;
@@ -108,6 +108,7 @@ public class saleExistingUser extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 subCount = priceList.get(position).getCost();
+                priceId=priceList.get(position).getId();
             }
 
             @Override
@@ -162,11 +163,13 @@ public class saleExistingUser extends BaseActivity {
                     /*incomeSubscriptionDTO.setSaleDate(currentDate);
                     incomeSubscriptionDTO.setFinishDate(finishDate);*/
                     outcomeSubscriptionDTO.setId(0);
-                    outcomeSubscriptionDTO.setPrice(subCount);
+                    outcomeSubscriptionDTO.setPrice(priceId);
                     outcomeSubscriptionDTO.setInstructorId(intentInstructor.getId());
+                   //TODO change problemヾ(≧▽≦*)o
+                    //this  problem!!!
                     outcomeSubscriptionDTO.setAssociatedUserId(newDBuser);
                     outcomeSubscriptionDTO.setDescription("");
-
+                    //（￣︶￣）↗　
                     createNewDBSubscription(outcomeSubscriptionDTO);
 
                 }
@@ -193,6 +196,7 @@ public class saleExistingUser extends BaseActivity {
                             FirebaseUser user = mAuth2.getCurrentUser();
                             newUser.setUid(user.getUid());
                             newDBuser= createNewDBUser(newUser); //create new user in REST db
+
                             //call PrinterActivit printPhoto
                             /*нужно создать новый абонемент и пользователя
                             updateUI(user);*/
@@ -236,7 +240,7 @@ public class saleExistingUser extends BaseActivity {
                                     for (Price price : priceList) {
                                         textItems.add(new CarouselPicker.TextItem(String.format("%d", price.getNumbers()), 20)); //I'm not proud of it
 
-                                    }
+                                    }//is it correct?
                                     subCount = priceList.get(0).getCost();
                                     carouselPicker.setAdapter(textAdapter);
                                     hideProgressDialog();

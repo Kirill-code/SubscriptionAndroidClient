@@ -136,8 +136,10 @@ public class BaseActivity extends AppCompatActivity {
         return createduser;
     }
     public void createNewDBSubscription(OutcomeSubscriptionDTO OutcomeSubscriptionDTO) {
-
-        Call<Void> call = api.savesubscription(idToken, OutcomeSubscriptionDTO);
+        //?? why that
+        getToken();
+        System.out.println(idToken);
+        Call<Void> call = api.savesubscription(/*idToken,*/ OutcomeSubscriptionDTO);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
