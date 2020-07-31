@@ -2,6 +2,7 @@ package com.subscription.android.client;
 
 
 import com.subscription.android.client.model.DTO.InstructorDTO;
+import com.subscription.android.client.model.DTO.VisitsDTO;
 import com.subscription.android.client.model.Instructor;
 import com.subscription.android.client.model.Price;
 import com.subscription.android.client.model.Subscription;
@@ -11,6 +12,9 @@ import com.subscription.android.client.model.UserAdmins;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -21,9 +25,9 @@ import retrofit2.http.Path;
 
 
 public interface Api {
-
- //String BASE_URL = "http://185.35.67.65:8080/subscription-server/";
-  String BASE_URL = "http://89.36.214.190:8080/subscription/";
+//stage api
+// String BASE_URL = "http://192.168.8.103:8080/";
+ String BASE_URL = "https://www.suryaschoolapi.ru.com:8443/subscription/";
 
   //change token validation!!
     @GET("admins")
@@ -40,6 +44,8 @@ public interface Api {
     Call<List> getInstructorsVisits(@Header("token") String token );
     @GET("visitsbydate")
     Call<List<List>> getMonthVisits(@Header("instid") long instid, @Header("dateStart") String dateStart, @Header("dateEnd") String dateEnd);
+  @GET("visitsbydate")
+  Flowable<List<List>> getMonthVisitsRx(@Header("instid") long instid, @Header("dateStart") String dateStart, @Header("dateEnd") String dateEnd);
     @GET("uidinstructor/{uid}")
     Call<Instructor> getInstructorByUid(@Header("token") String token, @Path("uid") String uid );
 
@@ -50,7 +56,7 @@ public interface Api {
     @POST("savenewvisit")
     Call<Void> savevisit(@Body String uid);
     @POST("createnewuser")
-    Call<Void> newUser(@Body User user);
+    Call<User> newUser(@Body User user);
     @POST("newinstructor")
     Call<Void> assignInstructor(@Header("token") String token,@Body InstructorDTO instructor);
 

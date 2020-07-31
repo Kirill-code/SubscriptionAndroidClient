@@ -54,10 +54,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class InstructorBaseActivity extends BaseActivity implements DateRangePickerFragment.OnDateRangeSelectedListener {
@@ -69,6 +75,14 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
     TextView adminBtn;
     Instructor intentInstructor=new Instructor();
 
+    public Retrofit retrofitRx = new Retrofit.Builder()
+            .baseUrl(Api.BASE_URL)
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+    public Api apiRx = retrofitRx.create(Api.class);
+    public FirebaseUser mUserInstr = FirebaseAuth.getInstance().getCurrentUser();
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +90,12 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
         Log.i(TAG, "Activity started");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instructor_base);
+        BaseActivity base=new BaseActivity();
+        base.getToken();
         showProgressDialog();
 
 //Разобраться с состоянием ответов
-        getInstructor(mUser.getUid());
+        getTokenLocaly(mUserInstr.getUid());
 
         FloatingActionButton fab=findViewById(R.id.fab);
 
@@ -134,7 +150,7 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
     }
 
 
-    private void getCurrentMonth() {
+    private void getCurrentMonth(long instructorId) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
@@ -142,55 +158,18 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
         calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         Date MonthLastDay = calendar.getTime();
 
-        getVisitsInPeriod(intentInstructor.getId(),sdf.format(MonthFirstDay),sdf.format(MonthLastDay));
-
+      getVisitsInPeriod(instructorId,sdf.format(MonthFirstDay),sdf.format(MonthLastDay));
+       // getVisitsInPeriodRx(1,sdf.format(MonthFirstDay),sdf.format(MonthLastDay));
     }
 
-    public void getInstructor(String uid ) {
-       // Instructor responseObj = new Instructor();
+    public void getTokenLocaly(String uid){
         mUser.getIdToken(true)
                 .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                     public void onComplete(@NonNull Task<GetTokenResult> task) {
                         if (task.isSuccessful()) {
                             String idToken = task.getResult().getToken();
-
-                            Call<Instructor> call = api.getInstructorByUid(idToken, uid);
-                            call.enqueue(new Callback<Instructor>() {
-                                @Override
-                                public void onResponse(Call<Instructor> call, Response<Instructor> response) {
-                                    if(response!=null) {
-                                        intentInstructor.setId(response.body().getId());
-                                        intentInstructor.setName(response.body().getName());
-                                        intentInstructor.setSurname(response.body().getSurname());
-                                        //change to callbacks
-                                        getCurrentMonth(/*Instructor instructor*/);
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<Instructor> call, Throwable t) {
-                                    try {
-                                        throw t;
-                                    } catch (ConnectException ex) {
-                                        Log.e(TAG, ex.getMessage());
-                                        hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
-                                                Toast.LENGTH_SHORT).show();
-                                    } catch (EOFException ex) {
-                                        Log.e(TAG, ex.getMessage());
-                                        hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
-                                                Toast.LENGTH_SHORT).show();
-                                    } catch (Throwable et) {
-                                        Log.e(TAG, et.getMessage());
-
-                                        hideProgressDialog();
-                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
-                                                Toast.LENGTH_SHORT).show();
-
-                                    }
-                                }
-                            });
+////////////////////////////delete this token assigmnet!
+                            getInstructor(idToken,uid);
 
                         } else {
                             Log.e("CallbackException", task.getException().toString());
@@ -198,12 +177,53 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
                     }
                 });
     }
+    public void getInstructor(String idtokenlocal, String uid ) {
 
+        Call<Instructor> call = api.getInstructorByUid(idtokenlocal, uid);
+        call.enqueue(new Callback<Instructor>() {
+            @Override
+            public void onResponse(Call<Instructor> call, Response<Instructor> response) {
+                if(response!=null) {
 
+                    Instructor tempInstructor=new Instructor();
+                    tempInstructor.setId(response.body().getId());
+                    tempInstructor.setName(response.body().getName());
+                    tempInstructor.setSurname(response.body().getSurname());
+
+                    //change to callbacks
+                    getCurrentMonth(response.body().getId());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Instructor> call, Throwable t) {
+                try {
+                    throw t;
+                } catch (ConnectException ex) {
+                    Log.e(TAG, ex.getMessage());
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
+                            Toast.LENGTH_SHORT).show();
+                } catch (EOFException ex) {
+                    Log.e(TAG, ex.getMessage());
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
+                            Toast.LENGTH_SHORT).show();
+                } catch (Throwable et) {
+                    Log.e(TAG, et.getMessage());
+
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
+                            Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+    }
+
+    //old version will be changed by RxJava implementation
     private void getVisitsInPeriod(long instid,String dateStart, String dateEnd) {
         recyclerView=null;
-
-
 
         Call<List<List>> call = api.getMonthVisits(instid,dateStart,dateEnd);
 
@@ -265,24 +285,34 @@ public class InstructorBaseActivity extends BaseActivity implements DateRangePic
                 }
             }
         });
+    }
+    private  void getVisitsInPeriodRx(long instid,String dateStart, String dateEnd) {
+        apiRx.getMonthVisitsRx(instid,dateStart,dateEnd)
+                .toObservable()
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<List<List>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-        //Start token verification
-        /*FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-        mUser.getIdToken(true)
-                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                    public void onComplete(@NonNull Task<GetTokenResult> task) {
-                        if (task.isSuccessful()) {
+                    }
 
-                            String idToken = task.getResult().getToken();
-                            showProgressDialog();
-                            // Send token to your backend via HTTPS
+                    @Override
+                    public void onNext(List<List> list) {
+                        Log.d(TAG,"onNext:");
+                        System.out.println();
+                    }
 
-                        } else {
-                            System.out.println( task.getException());
-                        }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG,"onError",e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
-*/
+
 
     }
 

@@ -190,7 +190,7 @@ public class EmailPasswordActivity extends BaseActivity implements
                                 user.getMetadata();
                                 System.out.println();
                             }catch (NullPointerException ex){
-
+                                Log.w(TAG, "signInWithCredential:failure - Nullpointer");
                             }
                             updateUI(user);
                         } else {

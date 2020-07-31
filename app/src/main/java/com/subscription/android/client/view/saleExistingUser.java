@@ -35,6 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import in.goodiebag.carouselpicker.CarouselPicker;
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,7 +63,6 @@ public class saleExistingUser extends BaseActivity {
     private FirebaseAuth mAuth1;
     private FirebaseAuth mAuth2;
     Instructor intentInstructor = new Instructor();
-    long newDBuser; //assosiated userId
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -155,22 +157,7 @@ public class saleExistingUser extends BaseActivity {
                     newUser.setName(autoTextView.getText().toString().substring(0, autoTextView.getText().toString().indexOf(" ")));
                     newUser.setSurname(autoTextView.getText().toString().substring(autoTextView.getText().toString().indexOf(" ") + 1));
                     newUser.setMobile(usrPhone.getText().toString());
-                    createAccount(newUser, usrPswd.getText().toString());
-
-
-
-                    OutcomeSubscriptionDTO outcomeSubscriptionDTO =new OutcomeSubscriptionDTO();
-                    /*incomeSubscriptionDTO.setSaleDate(currentDate);
-                    incomeSubscriptionDTO.setFinishDate(finishDate);*/
-                    outcomeSubscriptionDTO.setId(0);
-                    outcomeSubscriptionDTO.setPrice(priceId);
-                    outcomeSubscriptionDTO.setInstructorId(intentInstructor.getId());
-                   //TODO change problemヾ(≧▽≦*)o
-                    //this  problem!!!
-                    outcomeSubscriptionDTO.setAssociatedUserId(newDBuser);
-                    outcomeSubscriptionDTO.setDescription("");
-                    //（￣︶￣）↗　
-                    createNewDBSubscription(outcomeSubscriptionDTO);
+                    createAccount(newUser, usrPswd.getText().toString()); //API call to Firebase
 
                 }
             }
@@ -194,15 +181,17 @@ public class saleExistingUser extends BaseActivity {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth2.getCurrentUser();
-                            newUser.setUid(user.getUid());
-                            newDBuser= createNewDBUser(newUser); //create new user in REST db
+                            System.out.println(user.getUid()+" UID!!!");
+                            String unicId=user.getUid();
+                            newUser.setUid(unicId);
+                            //newDBuser= createNewDBUser(newUser); //create new user in REST db
 
                             //call PrinterActivit printPhoto
                             /*нужно создать новый абонемент и пользователя
                             updateUI(user);*/
-
                             mAuth2.signOut();
-                            go2Main();
+                            createNewDBUser(newUser);
+                           // go2Main();
                         } else {
                             try {
                                 throw task.getException();
@@ -218,7 +207,59 @@ public class saleExistingUser extends BaseActivity {
                     }
                 });
     }
+    public void createNewDBUser(User newUser) {
 
+        Call<User> call = api.newUser(newUser);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                hideProgressDialog();
+
+                Toast.makeText(getApplicationContext(), "User " + newUser.getUid() + " created",
+                        Toast.LENGTH_SHORT).show();
+
+                OutcomeSubscriptionDTO outcomeSubscriptionDTO =new OutcomeSubscriptionDTO();
+                    /*incomeSubscriptionDTO.setSaleDate(currentDate);
+                    incomeSubscriptionDTO.setFinishDate(finishDate);*/
+                outcomeSubscriptionDTO.setId(0);
+                outcomeSubscriptionDTO.setPrice(priceId);
+                outcomeSubscriptionDTO.setInstructorId(intentInstructor.getId());
+                //TODO change problemヾ(≧▽≦*)o
+                //this  problem!!!
+                outcomeSubscriptionDTO.setAssociatedUserId(response.body().getId());//API call
+                outcomeSubscriptionDTO.setDescription("");
+                //（￣︶￣）↗　
+                //API call
+                createNewDBSubscription(outcomeSubscriptionDTO);
+                Log.i(TAG, "User " + newUser.getUid() + " created");
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                try {
+                    throw t;
+                } catch (ConnectException ex) {
+                    Log.e(TAG, ex.getMessage());
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
+                            Toast.LENGTH_SHORT).show();
+                } catch (EOFException ex) {
+                    Log.e(TAG, ex.getMessage());
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
+                            Toast.LENGTH_SHORT).show();
+                } catch (Throwable et) {
+                    Log.e(TAG, et.getMessage());
+
+                    hideProgressDialog();
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
+                            Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+    }
 
 
     private void getPrice() {

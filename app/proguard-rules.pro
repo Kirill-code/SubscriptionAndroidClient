@@ -21,6 +21,10 @@
 -keepattributes EnclosingMethod
 -keepattributes InnerClasses
 
+#-dontobfuscate
+
+-keep class com.subscription.android.client.model.* { *; }
+
 # Required for Twitter Authentication
 # https://docs.fabric.io/android/twitter/twitter.html#set-up-kit
 -dontwarn com.squareup.okhttp.**
@@ -35,3 +39,5 @@
 -keepclasseswithmembers class * {
     @retrofit.http.* <methods>;
 }
+
+

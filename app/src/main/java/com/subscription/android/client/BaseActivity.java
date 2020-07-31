@@ -94,51 +94,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-    public long createNewDBUser(User newUser) {
 
-        Call<Void> call = api.newUser(newUser);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                hideProgressDialog();
-
-                Log.i(TAG, "User " + newUser.getUid() + " created");
-                Toast.makeText(getApplicationContext(), "User " + newUser.getUid() + " created",
-                        Toast.LENGTH_SHORT).show();
-                createduser = newUser.getId();
-
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                try {
-                    throw t;
-                } catch (ConnectException ex) {
-                    Log.e(TAG, ex.getMessage());
-                    hideProgressDialog();
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.errorconnection),
-                            Toast.LENGTH_SHORT).show();
-                } catch (EOFException ex) {
-                    Log.e(TAG, ex.getMessage());
-                    hideProgressDialog();
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
-                            Toast.LENGTH_SHORT).show();
-                } catch (Throwable et) {
-                    Log.e(TAG, et.getMessage());
-
-                    hideProgressDialog();
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.helpdesk),
-                            Toast.LENGTH_SHORT).show();
-
-                }
-            }
-        });
-        return createduser;
-    }
     public void createNewDBSubscription(OutcomeSubscriptionDTO OutcomeSubscriptionDTO) {
         //?? why that
         getToken();
-        System.out.println(idToken);
+
         Call<Void> call = api.savesubscription(/*idToken,*/ OutcomeSubscriptionDTO);
         call.enqueue(new Callback<Void>() {
             @Override
